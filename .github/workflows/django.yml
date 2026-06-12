@@ -27,4 +27,8 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
+        pip install -r site/ITRexHelper/requirements.txt
+    - name: Run Tests
+      run: |
+        cd site/ITRexHelper
         python manage.py test
