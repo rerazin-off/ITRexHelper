@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram name="Страница-1" id="Of6YTJnE6zBR8CwrIaRV">
-    <mxGraphModel dx="2562" dy="1346" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1278" dy="1575" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -107,22 +107,22 @@
           <mxGeometry y="112" width="160" height="58" as="geometry" />
         </mxCell>
         <mxCell id="lwI8Kz2CCzld5PVeFqKu-57" value="Сообщения чата" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="150" y="1770" width="160" height="172" as="geometry" />
+          <mxGeometry x="150" y="1770" width="160" height="182" as="geometry" />
         </mxCell>
         <mxCell id="lwI8Kz2CCzld5PVeFqKu-58" value="Текст" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="lwI8Kz2CCzld5PVeFqKu-57">
           <mxGeometry y="26" width="160" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="lwI8Kz2CCzld5PVeFqKu-59" value="Дата и время отправки" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="lwI8Kz2CCzld5PVeFqKu-57">
-          <mxGeometry y="52" width="160" height="28" as="geometry" />
+        <mxCell id="lwI8Kz2CCzld5PVeFqKu-59" value="Дата дата и время отправки" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="lwI8Kz2CCzld5PVeFqKu-57">
+          <mxGeometry y="52" width="160" height="38" as="geometry" />
         </mxCell>
         <mxCell id="lwI8Kz2CCzld5PVeFqKu-63" value="Статус" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="lwI8Kz2CCzld5PVeFqKu-57">
-          <mxGeometry y="80" width="160" height="26" as="geometry" />
+          <mxGeometry y="90" width="160" height="26" as="geometry" />
         </mxCell>
         <mxCell id="lwI8Kz2CCzld5PVeFqKu-61" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="lwI8Kz2CCzld5PVeFqKu-57">
-          <mxGeometry y="106" width="160" height="8" as="geometry" />
+          <mxGeometry y="116" width="160" height="8" as="geometry" />
         </mxCell>
         <mxCell id="lwI8Kz2CCzld5PVeFqKu-62" value="&lt;div&gt;Отправить()&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Удалить()&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="lwI8Kz2CCzld5PVeFqKu-57">
-          <mxGeometry y="114" width="160" height="58" as="geometry" />
+          <mxGeometry y="124" width="160" height="58" as="geometry" />
         </mxCell>
         <mxCell id="lwI8Kz2CCzld5PVeFqKu-64" value="&amp;lt;&amp;lt;enumeration&amp;gt;&amp;gt;&lt;div&gt;Статус заявки&lt;/div&gt;" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="630" y="1650" width="140" height="104" as="geometry" />
