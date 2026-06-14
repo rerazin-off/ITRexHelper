@@ -1,0 +1,273 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="Страница-1" id="9r50ikL0_LJ05k08dz2P">
+    <mxGraphModel dx="3854" dy="1591" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-1" value="Администратор" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-590" y="210" width="430" height="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-4" target="pG7AgVtcYGjGsD-9VqS_-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-4" value="" style="ellipse;fillColor=strokeColor;html=1;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="146" y="40" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-12" target="pG7AgVtcYGjGsD-9VqS_-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-48" value="Требуется создать&amp;nbsp;&lt;div&gt;контейнер Docker&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-33">
+          <mxGeometry x="-0.3405" y="-3" relative="1" as="geometry">
+            <mxPoint x="57" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-12" target="pG7AgVtcYGjGsD-9VqS_-14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="30" y="130" />
+              <mxPoint x="30" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-47" value="Конфигурация&lt;div&gt;&amp;nbsp;уже существует&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-46">
+          <mxGeometry x="-0.8492" y="-2" relative="1" as="geometry">
+            <mxPoint y="-28" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-12" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="96" y="100" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-5" value="Нажать кнопку для сборки Docker конфигурации" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="91" y="200" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-14" target="pG7AgVtcYGjGsD-9VqS_-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-14" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="180" y="390" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-9" value="Выполнение команды&amp;nbsp;&lt;div&gt;docker-compose build&amp;nbsp;&lt;/div&gt;" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="175" y="480" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-30" target="pG7AgVtcYGjGsD-9VqS_-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-30" value="Анализ ошибок сборки" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="250" y="620" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-73" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-31" target="pG7AgVtcYGjGsD-9VqS_-72">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="710" />
+              <mxPoint x="20" y="1655" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-31" value="Исправлние Dokerfile" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="250" y="690" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-15" value="Выполнение команды&lt;div&gt;docker-compose up -d&lt;/div&gt;" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="260" y="780" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-17" target="pG7AgVtcYGjGsD-9VqS_-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-17" value="Проверка сайта на&amp;nbsp;&lt;div&gt;localhost&lt;/div&gt;" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="260" y="870" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-18" target="pG7AgVtcYGjGsD-9VqS_-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-77" value="Проверка&amp;nbsp;&lt;div&gt;не пройдена&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-60">
+          <mxGeometry x="-0.4185" y="-2" relative="1" as="geometry">
+            <mxPoint x="2" y="-18" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-18" target="pG7AgVtcYGjGsD-9VqS_-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-78" value="Сайт работоспособен&amp;nbsp;&lt;div&gt;и прошел проверку&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-62">
+          <mxGeometry x="-0.7228" y="-1" relative="1" as="geometry">
+            <mxPoint x="61" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-18" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="265" y="940" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-28" target="pG7AgVtcYGjGsD-9VqS_-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-28" value="Проверка логов Docker контейнера" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="96" y="1010" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-29" target="pG7AgVtcYGjGsD-9VqS_-72">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="30" y="1110" />
+              <mxPoint x="30" y="1644" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-29" value="Исправление ошибок Docker контейнера" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="96" y="1090" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-20" value="Запуск сервера и&lt;div&gt;открытие порта 8000&lt;/div&gt;&lt;div&gt;с помощью ngrok&amp;nbsp;&lt;/div&gt;" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="280" y="1110" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-23" target="pG7AgVtcYGjGsD-9VqS_-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-23" value="Проверка публикации сайта" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="176" y="1305" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-68" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-24" target="pG7AgVtcYGjGsD-9VqS_-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-79" value="Сайт доступен&amp;nbsp;&lt;div&gt;публично&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-68">
+          <mxGeometry x="-0.5238" y="-3" relative="1" as="geometry">
+            <mxPoint x="-5" y="-17" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-24" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="181" y="1390" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-76" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-25" target="pG7AgVtcYGjGsD-9VqS_-72">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-25" value="Публикация завершена" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="35" y="1470" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-71" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-26" target="pG7AgVtcYGjGsD-9VqS_-27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-26" value="Проверка логов ngrok и nginx" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="280" y="1470" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-27" target="pG7AgVtcYGjGsD-9VqS_-72">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-27" value="Исправление конфигурации" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="280" y="1544" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.523;entryY=0.039;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-1" source="pG7AgVtcYGjGsD-9VqS_-24" target="pG7AgVtcYGjGsD-9VqS_-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="353" y="1420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-80" value="Сайт&amp;nbsp;&lt;div&gt;не работает&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-70">
+          <mxGeometry x="-0.6418" y="1" relative="1" as="geometry">
+            <mxPoint x="22" y="-19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-72" value="" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-1">
+          <mxGeometry x="210" y="1640" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-2" value="Docker" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-160" y="210" width="350" height="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-6" value="Создание docker-compose.yml на основе данных проекта" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="200" y="276" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-34" value="Создание Dockerfile" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="20" y="290" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-36" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=strokeColor;rotation=90;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="182.5" y="150" width="5" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.637;entryY=-0.017;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-2" source="pG7AgVtcYGjGsD-9VqS_-36" target="pG7AgVtcYGjGsD-9VqS_-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.423;entryY=0.072;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-2" source="pG7AgVtcYGjGsD-9VqS_-36" target="pG7AgVtcYGjGsD-9VqS_-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-41" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=strokeColor;rotation=90;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="187.5" y="276" width="5" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.333;entryY=0.593;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-2" source="pG7AgVtcYGjGsD-9VqS_-34" target="pG7AgVtcYGjGsD-9VqS_-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.167;entryY=0.528;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-2" source="pG7AgVtcYGjGsD-9VqS_-6" target="pG7AgVtcYGjGsD-9VqS_-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-2" source="pG7AgVtcYGjGsD-9VqS_-10" target="pG7AgVtcYGjGsD-9VqS_-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-10" value="Сборка проекта" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="47.5" y="480" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-11" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="52.5" y="560" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-16" value="Запуск контейнера&lt;div&gt;(app+nginx)&lt;/div&gt;" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-2">
+          <mxGeometry x="80" y="780" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-3" value="Сервер (Linux)" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="210" width="200" height="1700" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-64" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-3" source="pG7AgVtcYGjGsD-9VqS_-19" target="pG7AgVtcYGjGsD-9VqS_-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-19" value="Запуск ngrok" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-3">
+          <mxGeometry x="40" y="1120" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="pG7AgVtcYGjGsD-9VqS_-3" source="pG7AgVtcYGjGsD-9VqS_-21" target="pG7AgVtcYGjGsD-9VqS_-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-21" value="Ngrok создает безопастный тунель" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-3">
+          <mxGeometry x="40" y="1210" width="140" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-22" value="Ngrok связывает порт с публичной HTTPS-ссылкой" style="html=1;align=center;verticalAlign=top;rounded=1;absoluteArcSize=1;arcSize=10;dashed=0;whiteSpace=wrap;" vertex="1" parent="pG7AgVtcYGjGsD-9VqS_-3">
+          <mxGeometry x="40" y="1300" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.033;entryY=0.778;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-5" target="pG7AgVtcYGjGsD-9VqS_-36">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-41" target="pG7AgVtcYGjGsD-9VqS_-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-9" target="pG7AgVtcYGjGsD-9VqS_-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-11" target="pG7AgVtcYGjGsD-9VqS_-30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-53" value="Ошибка&amp;nbsp;&lt;div&gt;сборки проекта&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-52">
+          <mxGeometry x="-0.6252" y="-1" relative="1" as="geometry">
+            <mxPoint y="-19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-11" target="pG7AgVtcYGjGsD-9VqS_-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-43" y="960" />
+              <mxPoint x="-260" y="960" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-59" value="Успешная&amp;nbsp;&lt;div&gt;сборка проекта&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="pG7AgVtcYGjGsD-9VqS_-55">
+          <mxGeometry x="-0.8796" relative="1" as="geometry">
+            <mxPoint x="43" y="-3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-15" target="pG7AgVtcYGjGsD-9VqS_-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-16" target="pG7AgVtcYGjGsD-9VqS_-17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-10" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-20" target="pG7AgVtcYGjGsD-9VqS_-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pG7AgVtcYGjGsD-9VqS_-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="pG7AgVtcYGjGsD-9VqS_-22" target="pG7AgVtcYGjGsD-9VqS_-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
