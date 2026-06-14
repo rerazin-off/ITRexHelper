@@ -1,0 +1,111 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.1.2 Chrome/138.0.7204.243 Electron/37.4.0 Safari/537.36" version="28.1.2">
+  <diagram name="Страница-1" id="waovwD9lGriaEHMdrCQr">
+    <mxGraphModel dx="703" dy="840" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-1" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="80" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;" edge="1" source="AmjLe-ebaDJMkmOVJ5Ea-1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-3" value="Новая заявка" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="215" y="170" width="160" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-4" value="Сохранение темы, описания и контактных данных в БД" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;fontColor=#000000;" vertex="1" parent="AmjLe-ebaDJMkmOVJ5Ea-3">
+          <mxGeometry y="30" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-5" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="AmjLe-ebaDJMkmOVJ5Ea-3" parent="1" target="AmjLe-ebaDJMkmOVJ5Ea-7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="295" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-6" value="Клиент создал заявку" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="300" y="118" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-7" value="Заявка на рассмотрении" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-8" value="Обновление полей исполнителя и статуса" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;fontColor=#000000;" vertex="1" parent="AmjLe-ebaDJMkmOVJ5Ea-7">
+          <mxGeometry y="30" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-9" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="AmjLe-ebaDJMkmOVJ5Ea-7" parent="1" target="AmjLe-ebaDJMkmOVJ5Ea-13">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-10" value="Заявка отклонена" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="334" y="480" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-11" value="Сохранение заявки с коментарием отказа" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;fontColor=#000000;" vertex="1" parent="AmjLe-ebaDJMkmOVJ5Ea-10">
+          <mxGeometry y="30" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-12" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="AmjLe-ebaDJMkmOVJ5Ea-10" parent="1" target="AmjLe-ebaDJMkmOVJ5Ea-17">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="414" y="600" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="420" y="610" />
+              <mxPoint x="315" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-13" value="Заявка закрыта" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="570" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-14" value="Генерация ссылки на PDF и обносление статуса" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;fontColor=#000000;" vertex="1" parent="AmjLe-ebaDJMkmOVJ5Ea-13">
+          <mxGeometry y="30" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-15" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="AmjLe-ebaDJMkmOVJ5Ea-13" parent="1" target="AmjLe-ebaDJMkmOVJ5Ea-17">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="130" y="690" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="130" y="660" />
+              <mxPoint x="131" y="660" />
+              <mxPoint x="131" y="695" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-16" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="AmjLe-ebaDJMkmOVJ5Ea-8" target="AmjLe-ebaDJMkmOVJ5Ea-10">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="440" as="targetPoint" />
+            <mxPoint x="360" y="380" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="414" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-17" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="300" y="680" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-18" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="AmjLe-ebaDJMkmOVJ5Ea-4" target="AmjLe-ebaDJMkmOVJ5Ea-17">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="694" y="370" as="targetPoint" />
+            <mxPoint x="490" y="320" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="694" y="215" />
+              <mxPoint x="694" y="695" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-19" value="администратор назначает исполнителя" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="130" y="300" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-20" value="Клиент отменяет заявку" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="530" y="230" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-21" value="Заявка отклонена" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="320" y="618" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-23" value="Администратор отклоняет заявку" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="230" y="400" width="210" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AmjLe-ebaDJMkmOVJ5Ea-24" value="Заявка успешно обработана" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="100" y="700" width="180" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
