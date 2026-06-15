@@ -1,0 +1,110 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="Страница-1" id="HQfAG6mymNs_btfPRFt5">
+    <mxGraphModel dx="1281" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="uzAK-E943RoaLPOVWIpq-22" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="175" y="100" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-23" value="" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.467;entryY=-0.024;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" source="uzAK-E943RoaLPOVWIpq-22" parent="1" target="uzAK-E943RoaLPOVWIpq-24">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="185" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-24" value="Не зарегистрирован" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="115" y="150" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-26" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" source="uzAK-E943RoaLPOVWIpq-24" parent="1" target="uzAK-E943RoaLPOVWIpq-27">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="190" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-27" value="Регистрация" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="230" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-28" value="entry/ввод данных" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;fontColor=#000000;" vertex="1" parent="uzAK-E943RoaLPOVWIpq-27">
+          <mxGeometry y="30" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-29" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.438;entryY=-0.017;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" source="uzAK-E943RoaLPOVWIpq-27" parent="1" target="uzAK-E943RoaLPOVWIpq-30">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="190" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-30" value="Проверка данных" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="320" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-32" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" target="uzAK-E943RoaLPOVWIpq-28">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="399" as="targetPoint" />
+            <mxPoint x="120" y="389.9999999999999" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="70" y="390" />
+              <mxPoint x="70" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-33" value="данные некорректны" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="uzAK-E943RoaLPOVWIpq-32">
+          <mxGeometry x="-0.1833" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-34" value="Пользователь добавлен &#xa;в БД" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="420" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-36" value="" style="html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.446;entryY=-0.039;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" source="uzAK-E943RoaLPOVWIpq-34" parent="1" target="uzAK-E943RoaLPOVWIpq-39">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-37" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="uzAK-E943RoaLPOVWIpq-30" target="uzAK-E943RoaLPOVWIpq-34">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="439" as="targetPoint" />
+            <mxPoint x="390" y="370" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-38" value="данные корректны" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="uzAK-E943RoaLPOVWIpq-37">
+          <mxGeometry x="-0.2667" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-39" value="Авторизация" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="130" y="525" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-40" value="entry/ввод email, пароль" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;whiteSpace=wrap;overflow=hidden;rotatable=0;fontColor=#000000;" vertex="1" parent="uzAK-E943RoaLPOVWIpq-39">
+          <mxGeometry y="30" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-41" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" edge="1" parent="uzAK-E943RoaLPOVWIpq-39" source="uzAK-E943RoaLPOVWIpq-40" target="uzAK-E943RoaLPOVWIpq-39">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="91" y="43" as="targetPoint" />
+            <mxPoint x="90" y="5" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="200" y="38" />
+              <mxPoint x="200" y="-10" />
+              <mxPoint x="120" y="-10" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-44" value="данные&amp;nbsp;&lt;div&gt;неверны&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="uzAK-E943RoaLPOVWIpq-41">
+          <mxGeometry x="-0.5056" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-45" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;" vertex="1" parent="1">
+          <mxGeometry x="195" y="630" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-46" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="uzAK-E943RoaLPOVWIpq-40" target="uzAK-E943RoaLPOVWIpq-45">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="501" y="628" as="targetPoint" />
+            <mxPoint x="500" y="590" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uzAK-E943RoaLPOVWIpq-47" value="данные верны" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="uzAK-E943RoaLPOVWIpq-46">
+          <mxGeometry x="-0.4944" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
