@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Заявки</h1>
+        <h1>📋 Заявки</h1>
         
         <div class="user-info">
             <div>
@@ -17,8 +17,8 @@
                 <br>Роль: {{ user.get_role_display }}
             </div>
             <div>
-                <a href="{% url 'admin:index' %}">Админка</a>
-                <a href="/admin/logout/">Выйти</a>
+                <a href="{% url 'admin:index' %}">⚙️ Админка</a>
+                <a href="/admin/logout/">🚪 Выйти</a>
             </div>
         </div>
         
@@ -32,7 +32,7 @@
             {% endfor %}
         {% endif %}
         
-        <h2>Фильтр по статусу</h2>
+        <h2>🔍 Фильтр по статусу</h2>
         <form method="get">
             <select name="status">
                 <option value="">Все статусы</option>
@@ -43,7 +43,20 @@
             <button type="submit">Применить фильтр</button>
         </form>
         
-        <h2>Список заявок</h2>
+        <hr>
+        
+        <h2>➕ Создать новую заявку</h2>
+        <form method="post" action="{% url 'ticket_create' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="Тема заявки" required>
+            <textarea name="description" placeholder="Описание проблемы" rows="4" required></textarea>
+            <input type="text" name="contact_info" placeholder="Контактная информация (телефон/email)">
+            <button type="submit">Создать заявку</button>
+        </form>
+        
+        <hr>
+        
+        <h2>📝 Список заявок</h2>
         <ul>
             {% for ticket in tickets %}
                 <li>
@@ -63,7 +76,7 @@
                     </span>
                 </li>
             {% empty %}
-                <li>Заявок пока нет. <a href="{% url 'admin:tickets_ticket_add' %}">Создать первую заявку</a></li>
+                <li>Заявок пока нет. Создайте первую заявку выше!</li>
             {% endfor %}
         </ul>
     </div>
