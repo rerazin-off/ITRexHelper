@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator
 from .models import Ticket, Comment
+from .forms import TicketCreateForm, CommentForm
 from django.contrib import messages
 
 
@@ -12,7 +13,9 @@ def ticket_list(request):
     Представление для отображения списка заявок.
     - Клиент видит только свои заявки
     - Сотрудник/Админ видит все заявки
+    - Поддерживается фильтрация по статусу и пагинация
     """
+    # Фильтрация по роли пользователя
     if request.user.role == 'CLIENT':
         tickets = Ticket.objects.filter(author=request.user)
     else:
@@ -23,9 +26,15 @@ def ticket_list(request):
     if status_filter:
         tickets = tickets.filter(status=status_filter)
     
+    # Пагинация (по 10 заявок на страницу)
+    paginator = Paginator(tickets, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'tickets': tickets,
+        'tickets': page_obj,
         'status_choices': Ticket.Status.choices,
+        'form': TicketCreateForm(),
     }
     return render(request, 'tickets/ticket_list.html', context)
 
@@ -42,11 +51,22 @@ def ticket_detail(request, ticket_id):
         messages.error(request, 'У вас нет доступа к этой заявке')
         return redirect('ticket_list')
     
-    comments = ticket.comments.all()
+    # Клиент не должен видеть внутренние заметки сотрудников
+    if request.user.role == 'CLIENT':
+        comments = ticket.comments.filter(is_internal=False)
+    else:
+        comments = ticket.comments.all()
+    
+    # История изменений статусов (только для сотрудников)
+    status_history = None
+    if request.user.role != 'CLIENT':
+        status_history = ticket.status_history.all()
     
     context = {
         'ticket': ticket,
         'comments': comments,
+        'status_history': status_history,
+        'comment_form': CommentForm(),
     }
     return render(request, 'tickets/ticket_detail.html', context)
 
@@ -56,25 +76,25 @@ def ticket_detail(request, ticket_id):
 def ticket_create(request):
     """
     Представление для создания новой заявки.
+    Использует ModelForm для безопасной валидации данных.
     """
-    title = request.POST.get('title')
-    description = request.POST.get('description')
-    contact_info = request.POST.get('contact_info', '')
+    form = TicketCreateForm(request.POST)
     
-    if not title or not description:
-        messages.error(request, 'Заполните обязательные поля: тема и описание')
-        return redirect('ticket_list')
+    if form.is_valid():
+        ticket = form.save(commit=False)
+        ticket.author = request.user
+        ticket.status = Ticket.Status.NEW
+        ticket.save()
+        
+        messages.success(request, f'Заявка #{ticket.id} успешно создана')
+        return redirect('ticket_detail', ticket_id=ticket.id)
     
-    ticket = Ticket.objects.create(
-        author=request.user,
-        title=title,
-        description=description,
-        contact_info=contact_info,
-        status=Ticket.Status.NEW
-    )
+    # Если форма невалидна - выводим ошибки
+    for field, errors in form.errors.items():
+        for error in errors:
+            messages.error(request, f'{field}: {error}')
     
-    messages.success(request, f'Заявка #{ticket.id} успешно создана')
-    return redirect('ticket_detail', ticket_id=ticket.id)
+    return redirect('ticket_list')
 
 
 @login_required
@@ -96,6 +116,21 @@ def ticket_update_status(request, ticket_id):
         messages.error(request, 'Недопустимый статус')
         return redirect('ticket_detail', ticket_id=ticket_id)
     
+    # Проверка допустимости перехода статусов
+    old_status = ticket.status
+    allowed_transitions = {
+        'NEW': ['IN_PROGRESS', 'CANCELED', 'REJECTED'],
+        'IN_PROGRESS': ['WAITING', 'CLOSED', 'REJECTED'],
+        'WAITING': ['IN_PROGRESS', 'CLOSED'],
+    }
+    
+    if old_status in allowed_transitions and new_status not in allowed_transitions[old_status]:
+        messages.error(
+            request, 
+            f'Недопустимый переход статуса: из "{ticket.get_status_display()}" в "{dict(Ticket.Status.choices)[new_status]}"'
+        )
+        return redirect('ticket_detail', ticket_id=ticket_id)
+    
     ticket.status = new_status
     ticket.save()
     
@@ -108,6 +143,7 @@ def ticket_update_status(request, ticket_id):
 def add_comment(request, ticket_id):
     """
     Представление для добавления комментария к заявке.
+    Использует ModelForm для безопасной валидации.
     """
     ticket = get_object_or_404(Ticket, id=ticket_id)
     
@@ -116,19 +152,20 @@ def add_comment(request, ticket_id):
         messages.error(request, 'У вас нет доступа к этой заявке')
         return redirect('ticket_detail', ticket_id=ticket_id)
     
-    text = request.POST.get('text')
-    is_internal = request.POST.get('is_internal') == 'on'
+    form = CommentForm(request.POST)
     
-    if not text:
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.ticket = ticket
+        comment.author = request.user
+        
+        # Клиенты не могут создавать внутренние заметки (защита от подделки)
+        if request.user.role == 'CLIENT':
+            comment.is_internal = False
+        
+        comment.save()
+        messages.success(request, 'Комментарий добавлен')
+    else:
         messages.error(request, 'Комментарий не может быть пустым')
-        return redirect('ticket_detail', ticket_id=ticket_id)
     
-    Comment.objects.create(
-        ticket=ticket,
-        author=request.user,
-        text=text,
-        is_internal=is_internal
-    )
-    
-    messages.success(request, 'Комментарий добавлен')
     return redirect('ticket_detail', ticket_id=ticket_id)

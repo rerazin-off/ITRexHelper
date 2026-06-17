@@ -70,7 +70,7 @@
         <h3>Добавить комментарий</h3>
         <form method="post" action="{% url 'add_comment' ticket.id %}">
             {% csrf_token %}
-            <textarea name="text" placeholder="Введите комментарий..." required></textarea>
+            {{ comment_form.text }}
             <br>
             {% if user.role != 'CLIENT' %}
                 <label>
