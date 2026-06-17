@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список заявок - ITRexHelper</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Заявки</h1>
+        
+        <div class="user-info">
+            <div>
+                <strong>Привет, {{ user.surname }} {{ user.name }}!</strong>
+                <br>Роль: {{ user.get_role_display }}
+            </div>
+            <div>
+                <a href="{% url 'admin:index' %}">Админка</a>
+                <a href="/admin/logout/">Выйти</a>
+            </div>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="message-error">{{ message }}</div>
+                {% else %}
+                    <div class="message-success">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        
+        <h2>🔍 Фильтр по статусу</h2>
+        <form method="get">
+            <select name="status">
+                <option value="">Все статусы</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Применить фильтр</button>
+        </form>
+        
+        <hr>
+        
+        <h2>Создать новую заявку</h2>
+        <form method="post" action="{% url 'ticket_create' %}">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="Тема заявки" required>
+            <textarea name="description" placeholder="Описание проблемы" rows="4" required></textarea>
+            <input type="text" name="contact_info" placeholder="Контактная информация (телефон/email)">
+            <button type="submit">Создать заявку</button>
+        </form>
+        
+        <hr>
+        
+        <h2>Список заявок</h2>
+        <ul>
+            {% for ticket in tickets %}
+                <li>
+                    <a href="{% url 'ticket_detail' ticket.id %}">
+                        Заявка #{{ ticket.id }} — {{ ticket.title }}
+                    </a>
+                    <br>
+                    <span class="status 
+                        {% if ticket.status == 'NEW' %}status-new
+                        {% elif ticket.status == 'IN_PROGRESS' %}status-in-progress
+                        {% elif ticket.status == 'WAITING' %}status-waiting
+                        {% elif ticket.status == 'CLOSED' %}status-closed
+                        {% elif ticket.status == 'REJECTED' %}status-rejected
+                        {% elif ticket.status == 'CANCELED' %}status-canceled
+                        {% endif %}">
+                        {{ ticket.get_status_display }}
+                    </span>
+                </li>
+            {% empty %}
+                <li>Заявок пока нет. Создайте первую заявку выше!</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
