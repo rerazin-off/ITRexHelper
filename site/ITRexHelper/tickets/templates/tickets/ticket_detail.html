@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявка #{{ ticket.id }} - ITRexHelper</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <p><a href="{% url 'ticket_list' %}" class="btn">← Назад к списку заявок</a></p>
+        
+        <h1>Заявка #{{ ticket.id }}: {{ ticket.title }}</h1>
+        
+        <div class="ticket-info">
+            <p><strong>Статус:</strong> 
+                <span class="status 
+                    {% if ticket.status == 'NEW' %}status-new
+                    {% elif ticket.status == 'IN_PROGRESS' %}status-in-progress
+                    {% elif ticket.status == 'WAITING' %}status-waiting
+                    {% elif ticket.status == 'CLOSED' %}status-closed
+                    {% elif ticket.status == 'REJECTED' %}status-rejected
+                    {% elif ticket.status == 'CANCELED' %}status-canceled
+                    {% endif %}">
+                    {{ ticket.get_status_display }}
+                </span>
+            </p>
+            <p><strong>Приоритет:</strong> {{ ticket.get_priority_display }}</p>
+            <p><strong>Автор:</strong> {{ ticket.author }}</p>
+            <p><strong>Исполнитель:</strong> {{ ticket.executor|default:"Не назначен" }}</p>
+            <p><strong>Описание:</strong> {{ ticket.description }}</p>
+            <p><strong>Создана:</strong> {{ ticket.created_at|date:"d.m.Y H:i" }}</p>
+            
+            {% if ticket.appointment_time %}
+                <p><strong>Время приёма:</strong> {{ ticket.appointment_time|date:"d.m.Y H:i" }}</p>
+            {% endif %}
+        </div>
+        
+        {% if user.role != 'CLIENT' %}
+            <h3>Изменить статус</h3>
+            <form method="post" action="{% url 'ticket_update_status' ticket.id %}">
+                {% csrf_token %}
+                <select name="status">
+                    {% for value, label in ticket.Status.choices %}
+                        <option value="{{ value }}" {% if value == ticket.status %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Сохранить статус</button>
+            </form>
+            <hr>
+        {% endif %}
+        
+        <h2>Комментарии и история</h2>
+        <ul>
+            {% for comment in comments %}
+                <li class="comment {% if comment.is_internal %}internal{% endif %}">
+                    <strong>{{ comment.author }}</strong>
+                    <em>{{ comment.created_at|date:"d.m.Y H:i" }}</em>
+                    <br>{{ comment.text }}
+                    {% if comment.is_internal %}<br><em>(Внутренняя заметка)</em>{% endif %}
+                </li>
+            {% empty %}
+                <li>Комментариев пока нет</li>
+            {% endfor %}
+        </ul>
+        
+        <h3>Добавить комментарий</h3>
+        <form method="post" action="{% url 'add_comment' ticket.id %}">
+            {% csrf_token %}
+            <textarea name="text" placeholder="Введите комментарий..." required></textarea>
+            <br>
+            {% if user.role != 'CLIENT' %}
+                <label>
+                    <input type="checkbox" name="is_internal"> Внутренняя заметка (видна только сотрудникам)
+                </label>
+            {% endif %}
+            <button type="submit">Отправить комментарий</button>
+        </form>
+    </div>
+</body>
+</html>

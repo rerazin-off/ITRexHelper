@@ -124,6 +124,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Добавь эти строки для работы со статическими файлами
+import os
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
 # НАСТРОЙКИ ДЛЯ МОДУЛЯ БД И ЗАЯВОК (ТВОИ)
 
 AUTH_USER_MODEL = 'users.CustomUser'

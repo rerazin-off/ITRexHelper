@@ -166,3 +166,53 @@ class Comment(models.Model):
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
         ordering = ['created_at']
+
+
+
+
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
+
+
+@receiver(pre_save, sender=Ticket)
+def capture_old_status(sender, instance, **kwargs):
+    """
+    Сигнал перед сохранением заявки.
+    Запоминаем старый статус, чтобы потом записать его в историю.
+    """
+    if instance.pk:  # Если заявка уже существует (не новая)
+        try:
+            old_instance = Ticket.objects.get(pk=instance.pk)
+            instance._old_status = old_instance.status
+        except Ticket.DoesNotExist:
+            instance._old_status = None
+    else:
+        instance._old_status = None
+
+
+@receiver(post_save, sender=Ticket)
+def log_status_change(sender, instance, created, **kwargs):
+    """
+    Сигнал после сохранения заявки.
+    Записывает изменение статуса в историю.
+    """
+    old_status = getattr(instance, '_old_status', None)
+    
+    if created:
+        # Заявка только что создана
+        TicketStatusHistory.objects.create(
+            ticket=instance,
+            old_status=None,
+            new_status=instance.status,
+            changed_by=instance.author,
+            comment="Заявка создана"
+        )
+    elif old_status != instance.status:
+        # Статус изменился
+        TicketStatusHistory.objects.create(
+            ticket=instance,
+            old_status=old_status,
+            new_status=instance.status,
+            changed_by=instance.author,  # Здесь должен быть текущий пользователь
+            comment=f"Статус изменен с '{old_status}' на '{instance.status}'"
+        )
