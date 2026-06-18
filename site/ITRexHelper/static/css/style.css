@@ -292,6 +292,55 @@ a:hover {
     color: #764ba2;
 }
 
+/* Страницы авторизации и регистрации */
+.auth-container {
+    max-width: 480px;
+    margin-top: 40px;
+}
+
+.auth-container-wide {
+    max-width: 640px;
+}
+
+.auth-subtitle {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 1.05em;
+}
+
+.auth-form h2 {
+    margin-top: 0;
+    font-size: 1.3em;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 15px;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: #555;
+}
+
+.field-error {
+    color: #c33;
+    font-size: 0.9em;
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
+input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     .container {
@@ -309,5 +358,9 @@ a:hover {
     
     .user-info a {
         margin: 5px;
+    }
+
+    .auth-grid {
+        grid-template-columns: 1fr;
     }
 }

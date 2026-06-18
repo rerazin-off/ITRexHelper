@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход — ITRexHelper</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container auth-container">
+        <h1>ITRexHelper</h1>
+        <p class="auth-subtitle">Авторизация в системе поддержки</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="message-error">{{ message }}</div>
+                {% else %}
+                    <div class="message-success">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="message-error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            {{ form.username }}
+            {% for error in form.username.errors %}
+                <div class="field-error">{{ error }}</div>
+            {% endfor %}
+
+            <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+            {{ form.password }}
+            {% for error in form.password.errors %}
+                <div class="field-error">{{ error }}</div>
+            {% endfor %}
+
+            <button type="submit">Войти</button>
+        </form>
+
+        <p class="auth-switch">
+            Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
+        </p>
+    </div>
+</body>
+</html>

@@ -32,6 +32,12 @@ class CustomUser(AbstractUser):
         null=True, 
         verbose_name="Контактный телефон"
     )
+    company_name = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name="Название компании",
+    )
 
     def __str__(self):
         return f"{self.surname} {self.name} ({self.get_role_display()})"
