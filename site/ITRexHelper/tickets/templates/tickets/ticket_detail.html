@@ -1,84 +1,77 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заявка #{{ ticket.id }} - ITRexHelper</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="container">
-        <p><a href="{% url 'ticket_list' %}" class="btn">← Назад к списку заявок</a></p>
-        
-        <h1>Заявка #{{ ticket.id }}: {{ ticket.title }}</h1>
-        
-        <div class="ticket-info">
-            <p><strong>Статус:</strong> 
-                <span class="status 
-                    {% if ticket.status == 'NEW' %}status-new
-                    {% elif ticket.status == 'IN_PROGRESS' %}status-in-progress
-                    {% elif ticket.status == 'WAITING' %}status-waiting
-                    {% elif ticket.status == 'CLOSED' %}status-closed
-                    {% elif ticket.status == 'REJECTED' %}status-rejected
-                    {% elif ticket.status == 'CANCELED' %}status-canceled
-                    {% endif %}">
-                    {{ ticket.get_status_display }}
-                </span>
-            </p>
-            <p><strong>Приоритет:</strong> {{ ticket.get_priority_display }}</p>
-            <p><strong>Автор:</strong> {{ ticket.author }}</p>
-            <p><strong>Исполнитель:</strong> {{ ticket.executor|default:"Не назначен" }}</p>
-            <p><strong>Описание:</strong> {{ ticket.description }}</p>
-            <p><strong>Создана:</strong> {{ ticket.created_at|date:"d.m.Y H:i" }}</p>
-            
-            {% if ticket.appointment_time %}
-                <p><strong>Время приёма:</strong> {{ ticket.appointment_time|date:"d.m.Y H:i" }}</p>
-            {% endif %}
+{% extends 'tickets/includes/base.html' %}
+{% load ticket_extras %}
+
+{% block title %}Заявка #{{ ticket.id }} — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="page">
+    {% if user.role == 'CLIENT' %}
+        {% include 'tickets/includes/header_user.html' %}
+    {% else %}
+        {% include 'tickets/includes/header_admin.html' with active_nav='tickets' %}
+    {% endif %}
+
+    <main class="page-main">
+        <a href="{% if user.role == 'CLIENT' %}{% url 'ticket_list' %}{% else %}{% url 'admin_tickets' %}{% endif %}" class="btn btn-outline btn-sm">← Назад</a>
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Заявка #{{ ticket.id }}</h1>
+                {% with ticket|display_status as status_info %}
+                    <span class="status-badge {{ status_info.1 }}">{{ status_info.0 }}</span>
+                {% endwith %}
+            </div>
         </div>
-        
+
+        <section class="panel" style="padding:24px;margin-bottom:24px">
+            <p><strong>Описание:</strong> {{ ticket.description }}</p>
+            <p><strong>Автор:</strong> {{ ticket.author.surname }} {{ ticket.author.name }}</p>
+            <p><strong>Контакт:</strong> {{ ticket.contact_info|default:ticket.author.email }}</p>
+            <p><strong>Создана:</strong> {{ ticket.created_at|date:"d.m.Y H:i" }}</p>
+        </section>
+
         {% if user.role != 'CLIENT' %}
-            <h3>Изменить статус</h3>
-            <form method="post" action="{% url 'ticket_update_status' ticket.id %}">
-                {% csrf_token %}
-                <select name="status">
-                    {% for value, label in ticket.Status.choices %}
-                        <option value="{{ value }}" {% if value == ticket.status %}selected{% endif %}>
-                            {{ label }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <button type="submit">Сохранить статус</button>
-            </form>
-            <hr>
+            <section class="panel" style="padding:24px;margin-bottom:24px">
+                <h2 class="modal__title" style="margin-bottom:16px">Изменить статус</h2>
+                <form method="post" action="{% url 'ticket_update_status' ticket.id %}">
+                    {% csrf_token %}
+                    <select name="status" class="form-control" style="max-width:280px">
+                        {% for value, label in ticket.Status.choices %}
+                            <option value="{{ value }}" {% if value == ticket.status %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm" style="margin-top:12px">Сохранить статус</button>
+                </form>
+            </section>
         {% endif %}
-        
-        <h2>Комментарии и история</h2>
-        <ul>
-            {% for comment in comments %}
-                <li class="comment {% if comment.is_internal %}internal{% endif %}">
-                    <strong>{{ comment.author }}</strong>
-                    <em>{{ comment.created_at|date:"d.m.Y H:i" }}</em>
-                    <br>{{ comment.text }}
-                    {% if comment.is_internal %}<br><em>(Внутренняя заметка)</em>{% endif %}
-                </li>
-            {% empty %}
-                <li>Комментариев пока нет</li>
-            {% endfor %}
-        </ul>
-        
-        <h3>Добавить комментарий</h3>
-        <form method="post" action="{% url 'add_comment' ticket.id %}">
-            {% csrf_token %}
-            {{ comment_form.text }}
-            <br>
-            {% if user.role != 'CLIENT' %}
-                <label>
-                    <input type="checkbox" name="is_internal"> Внутренняя заметка (видна только сотрудникам)
-                </label>
-            {% endif %}
-            <button type="submit">Отправить комментарий</button>
-        </form>
-    </div>
-</body>
-</html>
+
+        <section class="panel" style="padding:24px">
+            <h2 class="modal__title" style="margin-bottom:16px">Комментарии</h2>
+            <div class="chat-messages" style="min-height:auto;max-height:none;padding:0">
+                {% for comment in comments %}
+                    <div class="message-bubble {% if comment.author == user %}outgoing{% else %}incoming{% endif %}">
+                        <strong>{{ comment.author.surname }} {{ comment.author.name }}</strong><br>
+                        {{ comment.text }}
+                        <span class="message-time">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                {% empty %}
+                    <div class="empty-state">Комментариев пока нет</div>
+                {% endfor %}
+            </div>
+
+            <form method="post" action="{% url 'add_comment' ticket.id %}" style="margin-top:20px">
+                {% csrf_token %}
+                {{ comment_form.text }}
+                {% if user.role != 'CLIENT' %}
+                    <label style="margin:12px 0;display:flex;gap:8px;align-items:center">
+                        <input type="checkbox" name="is_internal"> Внутренняя заметка
+                    </label>
+                {% endif %}
+                <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+            </form>
+        </section>
+    </main>
+
+    {% include 'tickets/includes/footer.html' %}
+</div>
+{% endblock %}

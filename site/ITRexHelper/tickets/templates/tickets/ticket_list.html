@@ -1,84 +1,148 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Список заявок - ITRexHelper</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="container">
-        <h1>Заявки</h1>
-        
-        <div class="user-info">
-            <div>
-                <strong>Привет, {{ user.surname }} {{ user.name }}!</strong>
-                <br>Роль: {{ user.get_role_display }}
-            </div>
-            <div>
-                <a href="{% url 'admin:index' %}">Админка</a>
-                <a href="/admin/logout/">Выйти</a>
-            </div>
-        </div>
-        
+{% extends 'tickets/includes/base.html' %}
+{% load ticket_extras %}
+
+{% block title %}Мои заявки — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="page">
+    {% include 'tickets/includes/header_user.html' %}
+
+    <main class="page-main">
         {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="message-error">{{ message }}</div>
-                {% else %}
-                    <div class="message-success">{{ message }}</div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-        
-        <h2>🔍 Фильтр по статусу</h2>
-        <form method="get">
-            <select name="status">
-                <option value="">Все статусы</option>
-                {% for value, label in status_choices %}
-                    <option value="{{ value }}">{{ label }}</option>
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
                 {% endfor %}
-            </select>
-            <button type="submit">Применить фильтр</button>
+            </div>
+        {% endif %}
+
+        <div class="page-head">
+            <div>
+                <h1 class="page-title">Мои заявки</h1>
+                <p class="page-subtitle">Всего заявок: {{ tickets_count }}</p>
+            </div>
+            <button type="button" class="btn btn-primary" data-modal-open="createTicketModal">+ Подать заявку</button>
+        </div>
+
+        {% if tickets %}
+            <div class="tickets-grid">
+                {% for ticket in tickets %}
+                    {% with ticket|display_status as status_info %}
+                    <article class="ticket-card">
+                        <div class="ticket-card__top">
+                            <span class="ticket-card__date">{{ ticket.created_at|date:"d.m.Y" }}</span>
+                            <span class="status-badge {{ status_info.1 }}">{{ status_info.0 }}</span>
+                        </div>
+                        <div class="ticket-card__text">{{ ticket.description|truncatechars:120 }}</div>
+                        <div class="ticket-card__actions">
+                            <button type="button" class="btn btn-primary btn-sm" data-ticket-open
+                                data-date="{{ ticket.created_at|date:'d.m.Y' }}"
+                                data-description="{{ ticket.description }}"
+                                data-status="{{ status_info.0 }}"
+                                data-status-class="{{ status_info.1 }}">Подробнее</button>
+                        </div>
+                    </article>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">Заявок пока нет. Нажмите «Подать заявку», чтобы создать первую.</div>
+        {% endif %}
+    </main>
+
+    {% include 'tickets/includes/footer.html' %}
+
+    <button type="button" class="support-fab" id="supportFab" aria-label="Чат поддержки">💬</button>
+
+    <div class="support-widget" id="supportWidget">
+        <div class="support-widget__head">
+            <div>
+                <strong>Поддержка</strong>
+                <div style="font-size:12px;color:#16a34a">Онлайн</div>
+            </div>
+            <button type="button" class="modal__close" data-support-close>&times;</button>
+        </div>
+        <div class="support-widget__messages">
+            {% for comment in chat_comments %}
+                <div class="message-bubble {% if comment.author == user %}outgoing{% else %}incoming{% endif %}">
+                    {{ comment.text }}
+                    <span class="message-time">{{ comment.created_at|date:"H:i" }}</span>
+                </div>
+            {% empty %}
+                <div class="message-bubble incoming">
+                    Здравствуйте! Чем могу помочь?
+                    <span class="message-time">10:00</span>
+                </div>
+            {% endfor %}
+        </div>
+        <form method="post" action="{% url 'support_chat' %}" class="support-widget__input">
+            {% csrf_token %}
+            <input type="text" name="text" placeholder="Введите сообщение..." required>
+            <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
         </form>
-        
-        <hr>
-        
-        <h2>Создать новую заявку</h2>
+    </div>
+</div>
+
+<div class="modal-overlay" id="createTicketModal">
+    <div class="modal">
+        <div class="modal__head">
+            <h2 class="modal__title">Новая заявка</h2>
+            <button type="button" class="modal__close" data-modal-close>&times;</button>
+        </div>
         <form method="post" action="{% url 'ticket_create' %}">
             {% csrf_token %}
-            <input type="text" name="title" placeholder="Тема заявки" required>
-            <textarea name="description" placeholder="Описание проблемы" rows="4" required></textarea>
-            <input type="text" name="contact_info" placeholder="Контактная информация (телефон/email)">
-            <button type="submit">Создать заявку</button>
+            <div class="modal__body">
+                <div class="modal__field">
+                    <div class="modal__field-label">Название компании</div>
+                    <input class="form-control" type="text" name="company_display" value="{{ user.company_name|default:'' }}" placeholder="ООО Ромашка" readonly>
+                </div>
+                <div class="form-row-2">
+                    <div class="modal__field">
+                        <div class="modal__field-label">Телефон</div>
+                        <input class="form-control" type="text" name="contact_info" value="{{ user.contact_phone|default:'' }}" placeholder="+7 (999) 123-45-67">
+                    </div>
+                    <div class="modal__field">
+                        <div class="modal__field-label">Почта</div>
+                        <input class="form-control" type="email" value="{{ user.email }}" readonly>
+                    </div>
+                </div>
+                <div class="modal__field">
+                    <div class="modal__field-label">Описание проблемы</div>
+                    <textarea class="form-control" name="description" rows="5" placeholder="Опишите вашу проблему..." required></textarea>
+                </div>
+                <input type="hidden" name="title" value="Заявка клиента">
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn-secondary" data-modal-close>Отмена</button>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </div>
         </form>
-        
-        <hr>
-        
-        <h2>Список заявок</h2>
-        <ul>
-            {% for ticket in tickets %}
-                <li>
-                    <a href="{% url 'ticket_detail' ticket.id %}">
-                        Заявка #{{ ticket.id }} — {{ ticket.title }}
-                    </a>
-                    <br>
-                    <span class="status 
-                        {% if ticket.status == 'NEW' %}status-new
-                        {% elif ticket.status == 'IN_PROGRESS' %}status-in-progress
-                        {% elif ticket.status == 'WAITING' %}status-waiting
-                        {% elif ticket.status == 'CLOSED' %}status-closed
-                        {% elif ticket.status == 'REJECTED' %}status-rejected
-                        {% elif ticket.status == 'CANCELED' %}status-canceled
-                        {% endif %}">
-                        {{ ticket.get_status_display }}
-                    </span>
-                </li>
-            {% empty %}
-                <li>Заявок пока нет. Создайте первую заявку выше!</li>
-            {% endfor %}
-        </ul>
     </div>
-</body>
-</html>
+</div>
+
+<div class="modal-overlay" id="ticketDetailModal">
+    <div class="modal">
+        <div class="modal__head">
+            <h2 class="modal__title">Детали заявки</h2>
+            <button type="button" class="modal__close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal__body">
+            <div class="modal__field">
+                <div class="modal__field-label">Дата подачи</div>
+                <div class="modal__field-value" id="detailDate"></div>
+            </div>
+            <div class="modal__field">
+                <div class="modal__field-label">Описание</div>
+                <div class="modal__field-value" id="detailDescription"></div>
+            </div>
+            <div class="modal__field">
+                <div class="modal__field-label">Статус</div>
+                <span class="status-badge" id="detailStatus"></span>
+            </div>
+        </div>
+        <div class="modal__footer">
+            <button type="button" class="btn btn-primary" data-modal-close>Закрыть</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

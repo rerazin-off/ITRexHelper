@@ -13,7 +13,9 @@ def login_view(request):
     Сценарий: ввод email и пароля → проверка в БД → вход или сообщение об ошибке.
     """
     if request.user.is_authenticated:
-        return redirect('ticket_list')
+        if request.user.role == 'CLIENT':
+            return redirect('ticket_list')
+        return redirect('admin_dashboard')
 
     form = CustomLoginForm(request, data=request.POST or None)
 
@@ -23,7 +25,10 @@ def login_view(request):
         next_url = request.GET.get('next')
         if next_url:
             return redirect(next_url)
-        return redirect('ticket_list')
+        user = form.get_user()
+        if user.role == 'CLIENT':
+            return redirect('ticket_list')
+        return redirect('admin_dashboard')
 
     return render(request, 'users/login.html', {'form': form})
 
@@ -35,7 +40,9 @@ def register_view(request):
     Сценарий: ввод данных → проверка → сохранение в БД → переход к авторизации.
     """
     if request.user.is_authenticated:
-        return redirect('ticket_list')
+        if request.user.role == 'CLIENT':
+            return redirect('ticket_list')
+        return redirect('admin_dashboard')
 
     form = CustomRegistrationForm(request.POST or None)
 

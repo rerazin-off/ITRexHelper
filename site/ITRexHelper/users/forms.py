@@ -12,8 +12,9 @@ class CustomLoginForm(AuthenticationForm):
     username = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={
-            'placeholder': 'example@mail.ru',
+            'placeholder': 'example@company.ru',
             'autocomplete': 'email',
+            'class': 'form-control',
         }),
     )
     password = forms.CharField(
@@ -22,6 +23,7 @@ class CustomLoginForm(AuthenticationForm):
         widget=forms.PasswordInput(attrs={
             'placeholder': 'Введите пароль',
             'autocomplete': 'current-password',
+            'class': 'form-control',
         }),
     )
 

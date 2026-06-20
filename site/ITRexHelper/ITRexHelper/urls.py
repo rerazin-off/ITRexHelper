@@ -10,7 +10,7 @@ urlpatterns = [
     path('tickets/', include('tickets.urls')),
 
     # Главная страница перенаправляет на список заявок
-    path('', RedirectView.as_view(url='/tickets/', permanent=False)),
+    path('', RedirectView.as_view(url='/accounts/login/', permanent=False)),
 ]
 
 # Для работы с медиа-файлами (PDF-договоры)

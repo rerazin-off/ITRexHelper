@@ -1,0 +1,67 @@
+{% extends 'tickets/includes/base.html' %}
+{% load ticket_extras %}
+
+{% block title %}Главная — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="page">
+    {% include 'tickets/includes/header_admin.html' with active_nav='dashboard' %}
+
+    <main class="page-main">
+        <div class="dashboard-layout">
+            <section class="panel">
+                <div class="panel__head">Мои заявки</div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>№ заявки</th>
+                            <th>Дата подачи</th>
+                            <th>Крайний день</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                            {% with ticket|display_status as status_info %}
+                            <tr>
+                                <td>#IT-{{ ticket.id }}</td>
+                                <td>{{ ticket.created_at|date:"d.m.Y" }}</td>
+                                <td>{{ ticket.created_at|date:"d.m.Y" }}</td>
+                                <td><span class="status-badge {{ status_info.1 }}">{{ status_info.0 }}</span></td>
+                            </tr>
+                            {% endwith %}
+                        {% empty %}
+                            <tr><td colspan="4">Заявок пока нет</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <aside class="stats-stack">
+                <div class="stat-card">
+                    <div class="stat-card__title">Успешно закрыто</div>
+                    <div class="stat-card__value">{{ closed_month }}</div>
+                    <div class="stat-card__meta">За этот месяц <span class="up">+8 ↑</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__title">Закреплено за мной</div>
+                    <div class="stat-card__value">{{ assigned_count }}</div>
+                    <div class="stat-card__meta">В работе / Открыто <span class="info">{{ in_progress_count }} / {{ open_count }}</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__title">Открыто на сайте</div>
+                    <div class="stat-card__value">{{ open_count }}</div>
+                    <div class="stat-card__meta">Всего заявок <span class="info">+12 сегодня</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__title">Необработанные обращения</div>
+                    <div class="stat-card__value alert">{{ unread_comments }}</div>
+                    <a href="{% url 'admin_chat' %}" class="btn btn-primary btn-sm">Перейти</a>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    {% include 'tickets/includes/footer.html' %}
+</div>
+{% endblock %}

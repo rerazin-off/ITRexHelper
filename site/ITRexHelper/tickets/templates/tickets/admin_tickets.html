@@ -1,0 +1,123 @@
+{% extends 'tickets/includes/base.html' %}
+{% load ticket_extras %}
+
+{% block title %}Все заявки — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="page">
+    {% include 'tickets/includes/header_admin.html' with active_nav='tickets' %}
+
+    <main class="page-main">
+        <div class="page-head">
+            <h1 class="page-title">Все заявки</h1>
+            <div class="toolbar__actions">
+                <button type="button" class="btn btn-outline btn-sm">Загрузить данные</button>
+                <button type="button" class="btn btn-outline btn-sm">Скачать данные</button>
+                <span class="page-subtitle">Всего: {{ tickets_count }}</span>
+            </div>
+        </div>
+
+        <section class="panel">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Дата подачи</th>
+                        <th>Статус</th>
+                        <th>ФИО клиента</th>
+                        <th>Контактная информация</th>
+                        <th>Описание заявки</th>
+                        <th>Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                        {% with ticket|display_status as status_info %}
+                        <tr>
+                            <td>{{ ticket.created_at|date:"d.m.Y" }}</td>
+                            <td><span class="status-badge {{ status_info.1 }}">{{ status_info.0 }}</span></td>
+                            <td>{{ ticket.author.surname }} {{ ticket.author.name }}</td>
+                            <td>{{ ticket.contact_info|default:ticket.author.contact_phone|default:ticket.author.email }}</td>
+                            <td>{{ ticket.description|truncatechars:60 }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" data-admin-ticket-open
+                                    data-action="{% url 'ticket_update_status' ticket.id %}"
+                                    data-company="{{ ticket.author.company_name|default:'Не указано' }}"
+                                    data-client="{{ ticket.author.surname }} {{ ticket.author.name }}"
+                                    data-contact="{{ ticket.contact_info|default:ticket.author.contact_phone }}"
+                                    data-date="{{ ticket.created_at|date:'d.m.Y' }}"
+                                    data-deadline="Не указана"
+                                    data-description="{{ ticket.description }}"
+                                    data-status="{{ status_info.0 }}"
+                                    data-status-class="{{ status_info.1 }}"
+                                    data-status-value="{{ ticket.status }}">
+                                    {% if ticket.status == 'CLOSED' %}Информация{% else %}Изменить статус{% endif %}
+                                </button>
+                            </td>
+                        </tr>
+                        {% endwith %}
+                    {% empty %}
+                        <tr><td colspan="6">Заявок пока нет</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    {% include 'tickets/includes/footer.html' %}
+</div>
+
+<div class="modal-overlay" id="adminTicketModal">
+    <div class="modal modal-lg">
+        <div class="modal__head">
+            <h2 class="modal__title">Заявка</h2>
+            <button type="button" class="modal__close" data-modal-close>&times;</button>
+        </div>
+        <form method="post" id="adminTicketForm" action="#">
+            {% csrf_token %}
+            <div class="modal__body">
+                <div class="form-row-2">
+                    <div class="modal__field">
+                        <div class="modal__field-label">Название компании</div>
+                        <div class="modal__field-value" id="adminCompany"></div>
+                    </div>
+                    <div class="modal__field">
+                        <div class="modal__field-label">ФИО клиента</div>
+                        <div class="modal__field-value" id="adminClient"></div>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="modal__field">
+                        <div class="modal__field-label">Контактная информация</div>
+                        <div class="modal__field-value" id="adminContact"></div>
+                    </div>
+                    <div class="modal__field">
+                        <div class="modal__field-label">Дата подачи</div>
+                        <div class="modal__field-value" id="adminDate"></div>
+                    </div>
+                </div>
+                <div class="modal__field">
+                    <div class="modal__field-label">Дата окончания рассмотрения</div>
+                    <div class="modal__field-value" id="adminDeadline"></div>
+                </div>
+                <div class="modal__field">
+                    <div class="modal__field-label">Описание проблемы</div>
+                    <div class="modal__field-value" id="adminDescription"></div>
+                </div>
+                <div class="modal__field" style="display:flex;align-items:center;gap:12px">
+                    <span class="status-badge" id="adminStatus"></span>
+                    <select name="status" id="adminStatusSelect" class="form-control" style="max-width:220px;margin:0">
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="attach-area">+ Прикрепить документ</div>
+            </div>
+            <div class="modal__footer">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="button" class="btn btn-secondary">Создать документ</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

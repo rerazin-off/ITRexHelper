@@ -1,329 +1,86 @@
+{% extends 'tickets/includes/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация — ITRexHelper</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="container auth-container auth-container-wide">
-        <h1>Регистрация</h1>
-        <p class="auth-subtitle">Создание учётной записи клиента</p>
+
+{% block title %}Регистрация — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-card auth-card-wide">
+        <div class="auth-brand">
+            <img src="{% static 'img/logo.svg' %}" alt="IT REX HELPER" width="48" height="48">
+            <div class="logo__text">
+                <div class="logo__title">IT REX</div>
+                <div class="logo__subtitle">HELPER</div>
+            </div>
+        </div>
+
+        <h1 class="auth-title">Регистрация</h1>
+        <p class="auth-subtitle">Заполните все поля для создания учётной записи</p>
 
         {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="message-error">{{ message }}</div>
-                {% else %}
-                    <div class="message-success">{{ message }}</div>
-                {% endif %}
-            {% endfor %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
         {% endif %}
 
         <form method="post" class="auth-form">
             {% csrf_token %}
 
-            <h2>Учётные данные</h2>
-
-            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-            {{ form.email }}
-            {% for error in form.email.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
-
-            <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
-            {{ form.password1 }}
-            <div class="password-requirements" id="passwordRequirements">
-                <div class="password-requirement" data-rule="length">✗ Минимум 8 символов</div>
-                <div class="password-requirement" data-rule="uppercase">✗ Заглавная буква (A-Z, А-Я)</div>
-                <div class="password-requirement" data-rule="lowercase">✗ Строчная буква (a-z, а-я)</div>
-                <div class="password-requirement" data-rule="digit">✗ Цифра (0-9)</div>
-                <div class="password-requirement" data-rule="special">✗ Специальный символ (!@#$%^&*(),.?":{}|<>)</div>
-            </div>
-            {% for error in form.password1.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
-
-            <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
-            {{ form.password2 }}
-            <div id="passwordMatchError" class="field-error" style="display: none;">Пароли не совпадают</div>
-            {% for error in form.password2.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
-
-            <hr>
-
-            <h2>Личные данные</h2>
-
-            <div class="auth-grid">
+            <div class="form-row-3">
                 <div>
-                    <label for="{{ form.surname.id_for_label }}">{{ form.surname.label }}</label>
+                    <label class="form-label" for="{{ form.surname.id_for_label }}">Фамилия</label>
                     {{ form.surname }}
-                    {% for error in form.surname.errors %}
-                        <div class="field-error">{{ error }}</div>
-                    {% endfor %}
                 </div>
                 <div>
-                    <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                    <label class="form-label" for="{{ form.name.id_for_label }}">Имя</label>
                     {{ form.name }}
-                    {% for error in form.name.errors %}
-                        <div class="field-error">{{ error }}</div>
-                    {% endfor %}
+                </div>
+                <div>
+                    <label class="form-label" for="{{ form.patronymic.id_for_label }}">Отчество</label>
+                    {{ form.patronymic }}
                 </div>
             </div>
 
-            <label for="{{ form.patronymic.id_for_label }}">{{ form.patronymic.label }}</label>
-            {{ form.patronymic }}
-            {% for error in form.patronymic.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
-
-            <label for="{{ form.company_name.id_for_label }}">{{ form.company_name.label }}</label>
+            <label class="form-label" for="{{ form.company_name.id_for_label }}">Наименование компании</label>
             {{ form.company_name }}
-            {% for error in form.company_name.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
 
-            <div class="auth-grid">
-                <div>
-                    <label for="{{ form.birth_date.id_for_label }}">{{ form.birth_date.label }}</label>
-                    {{ form.birth_date }}
-                    {% for error in form.birth_date.errors %}
-                        <div class="field-error">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                <div>
-                    <label for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
-                    {{ form.contact_phone }}
-                    {% for error in form.contact_phone.errors %}
-                        <div class="field-error">{{ error }}</div>
-                    {% endfor %}
-                </div>
+            <label class="form-label" for="{{ form.contact_phone.id_for_label }}">Номер телефона</label>
+            {{ form.contact_phone }}
+
+            <label class="form-label" for="{{ form.email.id_for_label }}">Электронная почта</label>
+            {{ form.email }}
+
+            <label class="form-label" for="{{ form.password1.id_for_label }}">Пароль</label>
+            <div class="password-field">
+                {{ form.password1 }}
+                <button type="button" class="password-toggle" aria-label="Показать пароль">👁</button>
             </div>
 
-            <button type="submit">Зарегистрироваться</button>
+            <label class="form-label" for="{{ form.password2.id_for_label }}">Подтверждение пароля</label>
+            <div class="password-field">
+                {{ form.password2 }}
+                <button type="button" class="password-toggle" aria-label="Показать пароль">👁</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px">Зарегистрироваться</button>
         </form>
 
-        <p class="auth-switch">
-            Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
-        </p>
+        <p class="auth-switch">Уже есть аккаунт? <a href="{% url 'login' %}" class="auth-link">Войти</a></p>
     </div>
+</div>
+{% endblock %}
 
-    <style>
-        .password-requirements {
-            margin-top: 8px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            border: 1px solid #e9ecef;
-        }
-
-        .password-requirement {
-            font-size: 13px;
-            padding: 3px 0;
-            transition: color 0.3s ease;
-            color: #dc3545;
-        }
-
-        .password-requirement.valid {
-            color: #28a745;
-        }
-
-        .password-requirement.valid::before {
-            content: '✓ ';
-        }
-
-        .password-requirement.invalid::before {
-            content: '✗ ';
-        }
-
-        .field-error {
-            color: #dc3545;
-            font-size: 13px;
-            margin-top: 3px;
-        }
-
-        input.error {
-            border-color: #dc3545 !important;
-        }
-
-        input.success {
-            border-color: #28a745 !important;
-        }
-    </style>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // === ПРОВЕРКА ПАРОЛЯ ===
-        const passwordInput = document.querySelector('#id_password1');
-        const password2Input = document.querySelector('#id_password2');
-        const requirements = document.querySelectorAll('.password-requirement');
-        const matchError = document.querySelector('#passwordMatchError');
-
-        // Функция проверки пароля
-        function validatePassword(password) {
-            const rules = {
-                length: password.length >= 8,
-                uppercase: /[A-ZА-Я]/.test(password),
-                lowercase: /[a-zа-я]/.test(password),
-                digit: /\d/.test(password),
-                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
-            };
-            return rules;
-        }
-
-        // Функция обновления требований
-        function updateRequirements(password) {
-            const rules = validatePassword(password);
-            
-            requirements.forEach(req => {
-                const rule = req.dataset.rule;
-                const isValid = rules[rule];
-                
-                req.classList.remove('valid', 'invalid');
-                if (isValid) {
-                    req.classList.add('valid');
-                    req.textContent = req.textContent.replace(/^[✓✗]\s/, '✓ ');
-                } else {
-                    req.classList.add('invalid');
-                    req.textContent = req.textContent.replace(/^[✓✗]\s/, '✗ ');
-                }
-            });
-
-            // Обновляем цвет рамки поля
-            if (password.length > 0) {
-                const allValid = Object.values(rules).every(v => v === true);
-                passwordInput.classList.remove('error', 'success');
-                if (allValid) {
-                    passwordInput.classList.add('success');
-                } else {
-                    passwordInput.classList.add('error');
-                }
-            } else {
-                passwordInput.classList.remove('error', 'success');
-            }
-
-            // Проверяем совпадение паролей
-            if (password2Input.value.length > 0) {
-                checkPasswordMatch();
-            }
-        }
-
-        // Функция проверки совпадения паролей
-        function checkPasswordMatch() {
-            const password1 = passwordInput.value;
-            const password2 = password2Input.value;
-            
-            if (password2.length === 0) {
-                matchError.style.display = 'none';
-                password2Input.classList.remove('error', 'success');
-                return;
-            }
-
-            if (password1 === password2) {
-                matchError.style.display = 'none';
-                password2Input.classList.remove('error');
-                password2Input.classList.add('success');
-            } else {
-                matchError.style.display = 'block';
-                password2Input.classList.remove('success');
-                password2Input.classList.add('error');
-            }
-        }
-
-        // События для поля пароля
-        if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
-                updateRequirements(this.value);
-            });
-        }
-
-        // События для поля подтверждения пароля
-        if (password2Input) {
-            password2Input.addEventListener('input', function() {
-                checkPasswordMatch();
-            });
-        }
-
-        // === ПРОВЕРКА ТЕЛЕФОНА ===
-        const phoneInput = document.querySelector('#id_contact_phone');
-        
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function() {
-                const phone = this.value;
-                let errorDiv = this.parentNode.querySelector('.phone-error');
-                
-                if (errorDiv) {
-                    errorDiv.remove();
-                }
-                
-                if (!phone) {
-                    this.style.borderColor = '';
-                    return;
-                }
-                
-                const cleaned = phone.replace(/[\s\-\(\)]/g, '');
-                const isValid = /^(\+7|8)\d{10}$/.test(cleaned);
-                
-                if (!isValid) {
-                    errorDiv = document.createElement('div');
-                    errorDiv.className = 'field-error phone-error';
-                    errorDiv.textContent = 'Введите корректный российский номер (формат: +7XXXXXXXXXX или 8XXXXXXXXXX)';
-                    this.parentNode.insertBefore(errorDiv, this.nextSibling);
-                    this.style.borderColor = '#dc3545';
-                } else {
-                    this.style.borderColor = '#28a745';
-                }
-            });
-            
-            phoneInput.addEventListener('blur', function() {
-                let phone = this.value.replace(/[\s\-\(\)]/g, '');
-                
-                if (phone && /^(\+7|8)\d{10}$/.test(phone)) {
-                    if (phone.startsWith('8')) {
-                        phone = '+7' + phone.substring(1);
-                    }
-                    
-                    if (phone.startsWith('+7') && phone.length === 12) {
-                        const formatted = phone.substring(0, 2) + ' (' + 
-                                         phone.substring(2, 5) + ') ' + 
-                                         phone.substring(5, 8) + '-' + 
-                                         phone.substring(8, 10) + '-' + 
-                                         phone.substring(10, 12);
-                        this.value = formatted;
-                    }
-                }
-            });
-        }
-
-        // === ПРОВЕРКА EMAIL ===
-        const emailInput = document.querySelector('#id_email');
-        
-        if (emailInput) {
-            emailInput.addEventListener('input', function() {
-                const email = this.value;
-                let errorDiv = this.parentNode.querySelector('.email-error');
-                
-                if (errorDiv) {
-                    errorDiv.remove();
-                }
-                
-                if (email && !email.includes('@')) {
-                    errorDiv = document.createElement('div');
-                    errorDiv.className = 'field-error email-error';
-                    errorDiv.textContent = 'Email должен содержать символ @';
-                    this.parentNode.insertBefore(errorDiv, this.nextSibling);
-                    this.style.borderColor = '#dc3545';
-                } else if (email) {
-                    this.style.borderColor = '#28a745';
-                } else {
-                    this.style.borderColor = '';
-                }
-            });
-        }
-    });
-    </script>
-</body>
-</html>
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.querySelector('#id_contact_phone');
+    if (phoneInput && !phoneInput.placeholder) phoneInput.placeholder = '+7 (999) 123-45-67';
+    const emailInput = document.querySelector('#id_email');
+    if (emailInput && !emailInput.placeholder) emailInput.placeholder = 'example@company.ru';
+    const companyInput = document.querySelector('#id_company_name');
+    if (companyInput && !companyInput.placeholder) companyInput.placeholder = 'ООО Ромашка';
+});
+</script>
+{% endblock %}

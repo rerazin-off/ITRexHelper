@@ -1,56 +1,59 @@
+{% extends 'tickets/includes/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход — ITRexHelper</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <div class="container auth-container">
-        <h1>ITRexHelper</h1>
-        <p class="auth-subtitle">Авторизация в системе поддержки</p>
+
+{% block title %}Вход — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <img src="{% static 'img/logo.svg' %}" alt="IT REX HELPER" width="48" height="48">
+            <div class="logo__text">
+                <div class="logo__title">IT REX</div>
+                <div class="logo__subtitle">HELPER</div>
+            </div>
+        </div>
+
+        <h1 class="auth-title">Вход в систему</h1>
+        <p class="auth-subtitle">Введите свои данные для входа</p>
 
         {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="message-error">{{ message }}</div>
-                {% else %}
-                    <div class="message-success">{{ message }}</div>
-                {% endif %}
-            {% endfor %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
         {% endif %}
 
         <form method="post" class="auth-form">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
-                <div class="message-error">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
+                <div class="message message-error">
+                    {% for error in form.non_field_errors %}{{ error }}{% endfor %}
                 </div>
             {% endif %}
 
-            <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+            <label class="form-label" for="{{ form.username.id_for_label }}">Электронная почта</label>
             {{ form.username }}
-            {% for error in form.username.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
+            {% for error in form.username.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
 
-            <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
-            {{ form.password }}
-            {% for error in form.password.errors %}
-                <div class="field-error">{{ error }}</div>
-            {% endfor %}
+            <label class="form-label" for="{{ form.password.id_for_label }}">Пароль</label>
+            <div class="password-field">
+                {{ form.password }}
+                <button type="button" class="password-toggle" aria-label="Показать пароль">👁</button>
+            </div>
+            {% for error in form.password.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
 
-            <button type="submit">Войти</button>
+            <div class="auth-options">
+                <label><input type="checkbox" name="remember"> Запомнить меня</label>
+                <a href="#" class="auth-link">Забыли пароль?</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%">Войти</button>
         </form>
 
-        <p class="auth-switch">
-            Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
-        </p>
+        <p class="auth-switch">Нет аккаунта? <a href="{% url 'register' %}" class="auth-link">Зарегистрироваться</a></p>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
