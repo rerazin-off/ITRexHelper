@@ -17,11 +17,12 @@ services:
       - "8090"
 
   nginx:
-    image: nginx:alpine
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
       - "8000:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.d:ro
       - static_volume:/staticfiles:ro
       - ./media:/media:ro
     depends_on:
