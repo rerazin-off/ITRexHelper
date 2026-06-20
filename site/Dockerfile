@@ -15,9 +15,6 @@ COPY . /app
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
-
 WORKDIR /app/ITRexHelper
 
 ENTRYPOINT ["/app/entrypoint.sh"]
