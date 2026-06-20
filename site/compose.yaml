@@ -2,7 +2,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
@@ -18,15 +18,9 @@ services:
       - ./media:/app/ITRexHelper/media
     expose:
       - "8090"
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import socket; socket.create_connection(('127.0.0.1', 8090), 5)\""]
-      interval: 10s
-      timeout: 5s
-      retries: 6
-      start_period: 40s
 
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:alpine
     restart: unless-stopped
     ports:
       - "${HOST_PORT:-8000}:80"
@@ -35,8 +29,7 @@ services:
       - static_volume:/staticfiles:ro
       - ./media:/media:ro
     depends_on:
-      web:
-        condition: service_healthy
+      - web
 
 volumes:
   django_data:

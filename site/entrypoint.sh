@@ -1,9 +1,6 @@
-#!/bin/sh
 set -e
 
-cd /app/ITRexHelper
-
-mkdir -p /data /app/ITRexHelper/staticfiles /app/ITRexHelper/media
+mkdir -p /data /app/ITRexHelper/media /app/ITRexHelper/staticfiles
 
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput

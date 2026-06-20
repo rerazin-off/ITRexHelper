@@ -1,13 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_not_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
 from .forms import CustomLoginForm, CustomRegistrationForm
 
 
-@login_not_required
 @require_http_methods(['GET', 'POST'])
 def login_view(request):
     """
@@ -30,7 +28,6 @@ def login_view(request):
     return render(request, 'users/login.html', {'form': form})
 
 
-@login_not_required
 @require_http_methods(['GET', 'POST'])
 def register_view(request):
     """
