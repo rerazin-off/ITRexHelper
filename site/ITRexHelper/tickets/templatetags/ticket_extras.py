@@ -51,3 +51,8 @@ def display_status(ticket):
     if _ticket_is_overdue(ticket):
         return 'Просрочена', 'status-overdue'
     return STATUS_LABELS.get(ticket.status, ticket.status), STATUS_CLASSES.get(ticket.status, 'status-new')
+
+
+@register.filter
+def ticket_readonly(ticket):
+    return ticket.status in ('CLOSED', 'REJECTED')

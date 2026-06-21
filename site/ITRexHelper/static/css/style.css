@@ -363,15 +363,44 @@ img {
     position: relative;
 }
 
+.password-field .form-control,
+.password-field input {
+    padding-right: 48px;
+}
+
 .password-toggle {
     position: absolute;
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
     background: none;
     border: none;
     cursor: pointer;
     color: var(--gray-400);
+    padding: 0;
+}
+
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.form-hint {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin: -8px 0 16px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
 }
 
 .auth-options {
@@ -938,4 +967,20 @@ img {
         width: calc(100vw - 32px);
         right: 16px;
     }
+}
+.search-field.searching input {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="%23999" stroke-width="2" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></circle></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#usersTableContainer section.panel {
+    animation: fadeIn 0.3s ease;
 }

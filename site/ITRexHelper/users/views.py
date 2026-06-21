@@ -1,17 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
-from .forms import CustomLoginForm, CustomRegistrationForm
+from .forms import AdminUserEditForm, CustomLoginForm, CustomRegistrationForm, ProfileForm
 
 
 @require_http_methods(['GET', 'POST'])
 def login_view(request):
-    """
-    Авторизация пользователя.
-    Сценарий: ввод email и пароля → проверка в БД → вход или сообщение об ошибке.
-    """
     if request.user.is_authenticated:
         if request.user.role == 'CLIENT':
             return redirect('ticket_list')
@@ -35,10 +32,6 @@ def login_view(request):
 
 @require_http_methods(['GET', 'POST'])
 def register_view(request):
-    """
-    Регистрация нового клиента.
-    Сценарий: ввод данных → проверка → сохранение в БД → переход к авторизации.
-    """
     if request.user.is_authenticated:
         if request.user.role == 'CLIENT':
             return redirect('ticket_list')
@@ -48,18 +41,29 @@ def register_view(request):
 
     if request.method == 'POST' and form.is_valid():
         form.save()
-        messages.success(
-            request,
-            'Регистрация прошла успешно. Войдите, используя email и пароль.',
-        )
+        messages.success(request, 'Регистрация прошла успешно. Войдите, используя email и пароль.')
         return redirect('login')
+
+    if request.method == 'POST' and not form.is_valid():
+        messages.error(request, 'Не удалось зарегистрироваться. Проверьте ошибки в форме.')
 
     return render(request, 'users/register.html', {'form': form})
 
 
+@login_required
+@require_http_methods(['GET', 'POST'])
+def profile_view(request):
+    form = ProfileForm(request.POST or None, instance=request.user)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Профиль успешно обновлён.')
+        return redirect('profile')
+
+    return render(request, 'users/profile.html', {'form': form})
+
+
 @require_http_methods(['GET', 'POST'])
 def logout_view(request):
-    """Выход из системы с перенаправлением на страницу входа."""
     logout(request)
     messages.success(request, 'Вы вышли из системы.')
     return redirect('login')

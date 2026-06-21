@@ -7,8 +7,6 @@ from .models import CustomUser
 
 
 class CustomLoginForm(AuthenticationForm):
-    """Форма входа: email и пароль (согласно диаграмме состояний модуля авторизации)."""
-
     username = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={
@@ -40,17 +38,11 @@ class CustomLoginForm(AuthenticationForm):
             try:
                 user = CustomUser.objects.get(email__iexact=email)
             except CustomUser.DoesNotExist:
-                raise ValidationError(
-                    self.error_messages['invalid_login'],
-                    code='invalid_login',
-                )
+                raise ValidationError(self.error_messages['invalid_login'], code='invalid_login')
 
             self.user_cache = user
             if not user.check_password(password):
-                raise ValidationError(
-                    self.error_messages['invalid_login'],
-                    code='invalid_login',
-                )
+                raise ValidationError(self.error_messages['invalid_login'], code='invalid_login')
             self.confirm_login_allowed(user)
 
         return self.cleaned_data
@@ -60,137 +52,94 @@ class CustomLoginForm(AuthenticationForm):
 
 
 class CustomRegistrationForm(UserCreationForm):
-    """
-    Форма регистрации клиента.
-    Поля соответствуют модели CustomUser и диаграмме классов проекта.
-    """
-
     email = forms.EmailField(
-        label='Email (почта)',
-        widget=forms.EmailInput(attrs={'placeholder': 'example@mail.ru'}),
+        label='Email',
+        widget=forms.EmailInput(attrs={'placeholder': 'example@company.ru', 'class': 'form-control'}),
     )
     surname = forms.CharField(
         label='Фамилия',
         max_length=100,
-        widget=forms.TextInput(attrs={'placeholder': 'Иванов'}),
+        widget=forms.TextInput(attrs={'placeholder': 'Иванов', 'class': 'form-control'}),
     )
     name = forms.CharField(
         label='Имя',
         max_length=100,
-        widget=forms.TextInput(attrs={'placeholder': 'Иван'}),
+        widget=forms.TextInput(attrs={'placeholder': 'Иван', 'class': 'form-control'}),
     )
     patronymic = forms.CharField(
         label='Отчество',
         max_length=100,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': 'Иванович (необязательно)'}),
-    )
-    birth_date = forms.DateField(
-        label='Дата рождения',
-        required=False,
-        widget=forms.DateInput(attrs={'type': 'date'}),
+        widget=forms.TextInput(attrs={'placeholder': 'Иванович', 'class': 'form-control'}),
     )
     contact_phone = forms.CharField(
-        label='Контактный телефон',
+        label='Номер телефона',
         max_length=20,
         required=False,
-        widget=forms.TextInput(attrs={'placeholder': '+7 (999) 123-45-67'}),
-        help_text='Введите номер в формате +7 (XXX) XXX-XX-XX или 8XXXXXXXXXX'
+        widget=forms.TextInput(attrs={'placeholder': '+7 (999) 123-45-67', 'class': 'form-control'}),
     )
     company_name = forms.CharField(
-        label='Название компании',
+        label='Наименование компании',
         max_length=200,
-        widget=forms.TextInput(attrs={'placeholder': 'ООО «Пример»'}),
+        widget=forms.TextInput(attrs={'placeholder': 'ООО Ромашка', 'class': 'form-control'}),
     )
     password1 = forms.CharField(
         label='Пароль',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Создайте пароль'}),
-        help_text='Пароль должен содержать минимум 8 символов, заглавную и строчную буквы, цифру и специальный символ (!@#$%^&*(),.?":{}|<>)'
+        widget=forms.PasswordInput(attrs={'placeholder': 'Создайте пароль', 'class': 'form-control'}),
     )
     password2 = forms.CharField(
         label='Подтверждение пароля',
-        widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль'}),
+        widget=forms.PasswordInput(attrs={'placeholder': 'Повторите пароль', 'class': 'form-control'}),
     )
 
     class Meta:
         model = CustomUser
         fields = (
             'email', 'surname', 'name', 'patronymic',
-            'birth_date', 'contact_phone', 'company_name',
-            'password1', 'password2',
+            'contact_phone', 'company_name', 'password1', 'password2',
         )
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
-        
-        # Проверка на наличие @
         if '@' not in email:
             raise ValidationError('Email должен содержать символ @')
-        
-        # Проверка на уникальность
         if CustomUser.objects.filter(email__iexact=email).exists():
             raise ValidationError('Пользователь с таким email уже зарегистрирован.')
-        
         return email
 
     def clean_contact_phone(self):
-        """Проверка российского номера телефона"""
         phone = self.cleaned_data.get('contact_phone')
-        
-        # Если поле необязательное и пустое - пропускаем
         if not phone:
             return phone
-        
-        # Удаляем все пробелы, скобки, дефисы и другие разделители
         cleaned_phone = re.sub(r'[\s\-\(\)]', '', phone)
-        
-        # Проверяем, начинается ли номер с +7 или 8, и содержит 11 цифр
         if not re.match(r'^(\+7|8)\d{10}$', cleaned_phone):
             raise ValidationError(
-                'Введите корректный российский номер телефона. '
-                'Формат: +7 (XXX) XXX-XX-XX или 8XXXXXXXXXX (11 цифр)'
+                'Введите корректный номер телефона в формате +7XXXXXXXXXX или 8XXXXXXXXXX'
             )
-        
-        # Приводим к единому формату +7XXXXXXXXXX
         if cleaned_phone.startswith('8'):
             cleaned_phone = '+7' + cleaned_phone[1:]
-        
         return cleaned_phone
 
     def clean_password1(self):
         password = self.cleaned_data.get('password1')
-        
-        # Проверка минимальной длины
         if len(password) < 8:
             raise ValidationError('Пароль должен содержать минимум 8 символов')
-        
-        # Проверка на заглавную букву (латиница и кириллица)
         if not re.search(r'[A-ZА-Я]', password):
             raise ValidationError('Пароль должен содержать хотя бы одну заглавную букву')
-        
-        # Проверка на строчную букву (латиница и кириллица)
         if not re.search(r'[a-zа-я]', password):
             raise ValidationError('Пароль должен содержать хотя бы одну строчную букву')
-        
-        # Проверка на цифру
         if not re.search(r'\d', password):
             raise ValidationError('Пароль должен содержать хотя бы одну цифру')
-        
-        # Проверка на специальный символ
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            raise ValidationError('Пароль должен содержать хотя бы один специальный символ (!@#$%^&*(),.?":{}|<>)')
-        
+            raise ValidationError('Пароль должен содержать специальный символ (!@#$%^&*)')
         return password
 
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
         password2 = cleaned_data.get('password2')
-        
-        # Проверка совпадения паролей
         if password1 and password2 and password1 != password2:
-            raise ValidationError('Пароли не совпадают')
-        
+            self.add_error('password2', 'Пароли не совпадают')
         return cleaned_data
 
     def _generate_username(self, email):
@@ -210,11 +159,54 @@ class CustomRegistrationForm(UserCreationForm):
         user.username = self._generate_username(user.email)
         user.surname = self.cleaned_data['surname']
         user.name = self.cleaned_data['name']
-        user.patronymic = self.cleaned_data.get('patronymic') or None
-        user.birth_date = self.cleaned_data.get('birth_date')
-        user.contact_phone = self.cleaned_data.get('contact_phone') or None
+        user.patronymic = self.cleaned_data.get('patronymic') or ''
+        user.contact_phone = self.cleaned_data.get('contact_phone') or ''
         user.company_name = self.cleaned_data['company_name']
         user.role = CustomUser.Role.CLIENT
         if commit:
             user.save()
         return user
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = (
+            'surname', 'name', 'patronymic', 'email',
+            'contact_phone', 'company_name', 'birth_date',
+        )
+        widgets = {
+            'surname': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'patronymic': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'contact_phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'birth_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+
+class AdminUserEditForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = (
+            'surname', 'name', 'patronymic', 'email',
+            'contact_phone', 'company_name', 'role', 'is_active',
+        )
+        widgets = {
+            'surname': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'patronymic': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'contact_phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'role': forms.Select(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(),
+        }
+
+    def __init__(self, *args, editor=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.editor = editor
+        if editor and editor.role != CustomUser.Role.ADMIN:
+            self.fields['role'].disabled = True
+            self.fields['is_active'].disabled = True

@@ -2,12 +2,12 @@
 <header class="site-header">
     <div class="site-header__inner">
         <a href="{% url 'ticket_list' %}" class="logo">
-            <img src="{% static 'img/logo.svg' %}" alt="IT REX HELPER" width="40" height="40">
+            <img src="{% static 'img/logo.png' %}" alt="IT REX HELPER" width="48" height="48">
             <div class="logo__text">
                 <div class="logo__title">IT REX</div>
                 <div class="logo__subtitle">HELPER</div>
             </div>
         </a>
-        <a href="{% url 'logout' %}" class="profile-btn" title="Выйти">👤</a>
+        <a href="{% url 'profile' %}" class="profile-btn" title="Личный кабинет">👤</a>
     </div>
 </header>

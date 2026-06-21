@@ -1,0 +1,64 @@
+{% load ticket_extras %}
+<div class="modal-overlay" id="adminTicketModal">
+    <div class="modal modal-lg">
+        <div class="modal__head">
+            <h2 class="modal__title">Заявка</h2>
+            <button type="button" class="modal__close" data-modal-close>&times;</button>
+        </div>
+        <form method="post" id="adminTicketForm" action="#">
+            {% csrf_token %}
+            <input type="hidden" name="next" id="adminTicketNext" value="">
+            <div class="modal__body">
+                <div class="form-row-2">
+                    <div class="modal__field">
+                        <div class="modal__field-label">Название компании</div>
+                        <div class="modal__field-value" id="adminCompany"></div>
+                    </div>
+                    <div class="modal__field">
+                        <div class="modal__field-label">ФИО клиента</div>
+                        <div class="modal__field-value" id="adminClient"></div>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="modal__field">
+                        <div class="modal__field-label">Контактная информация</div>
+                        <input class="form-control" type="text" name="contact_info" id="adminContactInput">
+                    </div>
+                    <div class="modal__field">
+                        <div class="modal__field-label">Дата подачи</div>
+                        <div class="modal__field-value" id="adminDate"></div>
+                    </div>
+                </div>
+                <div class="modal__field">
+                    <div class="modal__field-label">Описание проблемы</div>
+                    <textarea class="form-control" name="description" id="adminDescriptionInput" rows="4"></textarea>
+                </div>
+                <div class="form-row-2">
+                    <div class="modal__field">
+                        <div class="modal__field-label">Статус</div>
+                        <select name="status" id="adminStatusSelect" class="form-control">
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal__field">
+                        <div class="modal__field-label">Приоритет</div>
+                        <select name="priority" id="adminPrioritySelect" class="form-control">
+                            {% for value, label in priority_choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div id="adminReadonlyNotice" class="message message-error" style="display:none">
+                    Заявка завершена или отклонена — доступен только просмотр.
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button type="submit" class="btn btn-primary" id="adminTicketSave">Сохранить</button>
+                <button type="button" class="btn btn-secondary" data-modal-close>Закрыть</button>
+            </div>
+        </form>
+    </div>
+</div>

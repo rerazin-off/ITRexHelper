@@ -7,7 +7,7 @@
 <div class="auth-page">
     <div class="auth-card">
         <div class="auth-brand">
-            <img src="{% static 'img/logo.svg' %}" alt="IT REX HELPER" width="48" height="48">
+            <img src="{% static 'img/logo.png' %}" alt="IT REX HELPER" width="56" height="56">
             <div class="logo__text">
                 <div class="logo__title">IT REX</div>
                 <div class="logo__subtitle">HELPER</div>
@@ -41,7 +41,9 @@
             <label class="form-label" for="{{ form.password.id_for_label }}">Пароль</label>
             <div class="password-field">
                 {{ form.password }}
-                <button type="button" class="password-toggle" aria-label="Показать пароль">👁</button>
+                <button type="button" class="password-toggle" aria-label="Показать пароль">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 12C4.5 7 8 4 12 4C16 4 19.5 7 22 12C19.5 17 16 20 12 20C8 20 4.5 17 2 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+                </button>
             </div>
             {% for error in form.password.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
 
