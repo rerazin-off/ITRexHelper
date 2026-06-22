@@ -20,9 +20,6 @@ User = get_user_model()
 SUPPORT_TICKET_TITLE = "Чат поддержки"
 
 
-# =============================
-# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-# =============================
 
 def _is_staff(user):
     """Проверяет, является ли пользователь сотрудником или админом"""
@@ -84,9 +81,6 @@ def ticket_list(request):
     )
 
 
-# =============================
-# СОЗДАНИЕ ЗАЯВКИ
-# =============================
 
 @login_required
 @require_http_methods(["POST"])
@@ -114,50 +108,51 @@ def ticket_create(request):
 
     return redirect("ticket_list")
 
-
-# =============================
-# ГЛАВНАЯ АДМИНА (МОИ ЗАЯВКИ)
-# =============================
-
 @login_required
 def admin_dashboard(request):
     """Главная страница админа - мои назначенные заявки"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
-    tickets = Ticket.objects.filter(executor=request.user)
-    tickets = _exclude_support_tickets(tickets)
+    all_tickets = _exclude_support_tickets(Ticket.objects.all())
 
-    assigned_count = tickets.count()
-    in_progress_count = tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
-    closed_month = tickets.filter(status=Ticket.Status.CLOSED).count()
-    open_count = Ticket.objects.filter(status=Ticket.Status.NEW).count()
+    my_tickets = all_tickets.filter(executor=request.user)
 
-    unread_comments = Comment.objects.filter(
-        ticket__in=tickets,
-        is_internal=False
-    ).exclude(author=request.user).count()
+    # Все новые заявки на сайте (для статистики)
+    open_count = all_tickets.filter(status=Ticket.Status.NEW).count()
 
+    # Мои заявки в работе
+    in_progress_count = my_tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
+
+    # Закрыто за текущий месяц
+    now = timezone.now()
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    closed_month = my_tickets.filter(
+        status=Ticket.Status.CLOSED,
+        updated_at__gte=month_start
+    ).count()
+
+    # Непрочитанные уведомления (для виджета "Необработанные обращения")
+    try:
+        unread_comments = Notification.objects.filter(
+            user=request.user,
+            is_read=False
+        ).count()
+    except Exception:
+        unread_comments = 0
     return render(
         request,
         "tickets/admin_dashboard.html",
         {
-            "tickets": tickets,
+            "tickets": my_tickets.order_by("-created_at")[:10],
             "open_count": open_count,
-            "closed_month": closed_month,
-            "assigned_count": assigned_count,
+            "assigned_count": my_tickets.count(),
             "in_progress_count": in_progress_count,
+            "closed_month": closed_month,
             "unread_comments": unread_comments,
-            # ИСПРАВЛЕНО: Добавлены статусы и приоритеты для модалки
-            "status_choices": Ticket.Status.choices,
-            "priority_choices": Ticket.Priority.choices,
         }
     )
 
-
-# =============================
-# ВСЕ ЗАЯВКИ (ДЛЯ СОТРУДНИКОВ)
-# =============================
 
 @login_required
 def admin_tickets(request):
@@ -190,7 +185,6 @@ def admin_tickets(request):
             Q(author__surname__icontains=search_query) |
             Q(author__name__icontains=search_query)
         )
-
     sort_by = request.GET.get("sort", "-created_at")
     allowed_sorts = ["created_at", "-created_at", "status", "-status", "priority", "-priority"]
     if sort_by not in allowed_sorts:
@@ -220,9 +214,6 @@ def admin_tickets(request):
     )
 
 
-# =============================
-# АНАЛИТИКА
-# =============================
 
 @login_required
 def admin_analytics(request):
@@ -260,7 +251,6 @@ def admin_analytics(request):
 
     chart_months = []
     chart_values = []
-
     for i in range(5, -1, -1):
         month_date = (now - timedelta(days=30 * i)).replace(day=1)
         month_name = month_date.strftime("%B %Y")
@@ -294,10 +284,6 @@ def admin_analytics(request):
     )
 
 
-# =============================
-# ДЕТАЛЬНАЯ СТРАНИЦА ЗАЯВКИ
-# =============================
-
 @login_required
 def ticket_detail(request, ticket_id):
     """Детальный просмотр заявки"""
@@ -328,9 +314,6 @@ def ticket_detail(request, ticket_id):
     )
 
 
-# =============================
-# НАЗНАЧИТЬ СЕБЯ ИСПОЛНИТЕЛЕМ
-# =============================
 
 @login_required
 @require_http_methods(["POST"])
@@ -357,11 +340,6 @@ def ticket_assign_self(request, ticket_id):
 
     messages.success(request, "Вы назначены исполнителем")
     return redirect("ticket_detail", ticket_id=ticket_id)
-
-
-# =============================
-# ИЗМЕНЕНИЕ СТАТУСА
-# =============================
 
 @login_required
 @require_http_methods(["POST"])
@@ -412,11 +390,6 @@ def ticket_update_status(request, ticket_id):
 
     messages.success(request, f"Статус изменен на «{ticket.get_status_display()}»")
     return redirect("ticket_detail", ticket_id=ticket_id)
-
-
-# =============================
-# ОБНОВЛЕНИЕ ЗАЯВКИ АДМИНОМ
-# =============================
 
 @login_required
 @require_http_methods(["POST"])
@@ -470,10 +443,6 @@ def ticket_admin_update(request, ticket_id):
         return redirect(next_url)
     return redirect("ticket_detail", ticket_id=ticket_id)
 
-
-# =============================
-# ДОБАВЛЕНИЕ КОММЕНТАРИЯ
-# =============================
 
 @login_required
 @require_http_methods(["POST"])
