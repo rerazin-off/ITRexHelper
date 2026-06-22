@@ -47,9 +47,12 @@ def _get_query_string(request):
     return query.urlencode()
 
 
+<<<<<<< HEAD
 # =============================
 # АВТОРИЗАЦИЯ
 # =============================
+=======
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 def login_view(request):
     """Заглушка для логина - редирект на список заявок"""
@@ -60,9 +63,12 @@ def login_view(request):
     return redirect("ticket_list")
 
 
+<<<<<<< HEAD
 # =============================
 # СПИСОК ЗАЯВОК КЛИЕНТА
 # =============================
+=======
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 def ticket_list(request):
@@ -84,9 +90,14 @@ def ticket_list(request):
     )
 
 
+<<<<<<< HEAD
 # =============================
 # СОЗДАНИЕ ЗАЯВКИ
 # =============================
+=======
+
+
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 @require_http_methods(["POST"])
@@ -116,6 +127,7 @@ def ticket_create(request):
     return redirect("ticket_list")
 
 
+<<<<<<< HEAD
 # =============================
 # ГЛАВНАЯ АДМИНА (МОИ ЗАЯВКИ)
 # =============================
@@ -154,23 +166,58 @@ def admin_dashboard(request):
     except Exception:
         unread_comments = 0
 
+=======
+
+@login_required
+def admin_dashboard(request):
+    if not _is_staff(request.user):
+        return redirect("ticket_list")
+    
+    tickets = Ticket.objects.filter(executor=request.user)
+    
+    tickets = _exclude_support_tickets(tickets)
+    
+    assigned_count = tickets.count()
+    in_progress_count = tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
+    closed_month = tickets.filter(status=Ticket.Status.CLOSED).count()
+    open_count = Ticket.objects.filter(status=Ticket.Status.NEW).count() 
+    
+    unread_comments = Comment.objects.filter(
+        ticket__in=tickets,
+        is_internal=False
+    ).exclude(author=request.user).count()
+    
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
     return render(
         request,
         "tickets/admin_dashboard.html",
         {
+<<<<<<< HEAD
             "tickets": my_tickets.order_by("-created_at")[:10],
             "open_count": open_count,
             "assigned_count": my_tickets.count(),
             "in_progress_count": in_progress_count,
             "closed_month": closed_month,
             "unread_comments": unread_comments,
+=======
+            "tickets": tickets,
+            "open_count": open_count,
+            "closed_month": closed_month,
+            "assigned_count": assigned_count,
+            "in_progress_count": in_progress_count,
+            "unread_comments": unread_comments
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
         }
     )
 
 
+<<<<<<< HEAD
 # =============================
 # ВСЕ ЗАЯВКИ (ДЛЯ СОТРУДНИКОВ)
 # =============================
+=======
+
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 def admin_tickets(request):
@@ -241,9 +288,14 @@ def admin_tickets(request):
     )
 
 
+<<<<<<< HEAD
 # =============================
 # АНАЛИТИКА
 # =============================
+=======
+
+
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 def admin_analytics(request):
@@ -324,9 +376,14 @@ def admin_analytics(request):
     )
 
 
+<<<<<<< HEAD
 # =============================
 # ДЕТАЛЬНАЯ СТРАНИЦА ЗАЯВКИ
 # =============================
+=======
+
+
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 def ticket_detail(request, ticket_id):
@@ -361,9 +418,15 @@ def ticket_detail(request, ticket_id):
     )
 
 
+<<<<<<< HEAD
 # =============================
 # НАЗНАЧИТЬ СЕБЯ ИСПОЛНИТЕЛЕМ
 # =============================
+=======
+
+
+
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 @require_http_methods(["POST"])
@@ -393,10 +456,13 @@ def ticket_assign_self(request, ticket_id):
     return redirect("ticket_detail", ticket_id=ticket_id)
 
 
+<<<<<<< HEAD
 # =============================
 # ИЗМЕНЕНИЕ СТАТУСА
 # =============================
 
+=======
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 @login_required
 @require_http_methods(["POST"])
 def ticket_update_status(request, ticket_id):
@@ -450,10 +516,13 @@ def ticket_update_status(request, ticket_id):
     return redirect("ticket_detail", ticket_id=ticket_id)
 
 
+<<<<<<< HEAD
 # =============================
 # ОБНОВЛЕНИЕ ЗАЯВКИ АДМИНОМ
 # =============================
 
+=======
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 @login_required
 @require_http_methods(["POST"])
 def ticket_admin_update(request, ticket_id):
@@ -511,9 +580,12 @@ def ticket_admin_update(request, ticket_id):
     return redirect("ticket_detail", ticket_id=ticket_id)
 
 
+<<<<<<< HEAD
 # =============================
 # ДОБАВЛЕНИЕ КОММЕНТАРИЯ
 # =============================
+=======
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 
 @login_required
 @require_http_methods(["POST"])
@@ -544,11 +616,14 @@ def add_comment(request, ticket_id):
 
     return redirect("ticket_detail", ticket_id=ticket_id)
 
+<<<<<<< HEAD
 
 # =============================
 # УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ
 # =============================
 
+=======
+>>>>>>> 6c5cacb5cd341378040da80f3990598b860e76f7
 @login_required
 def admin_users(request):
     """Список всех пользователей (только для сотрудников)"""
