@@ -14,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 
 from .models import Ticket, TicketStatusHistory, Comment, Notification
 from .forms import TicketCreateForm, CommentForm
+from users.forms import AdminUserEditForm
 
 User = get_user_model()
 
@@ -476,17 +477,22 @@ def add_comment(request, ticket_id):
 # УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (ИСПРАВЛЕНО ДЛЯ AJAX)
 # =============================
 
+# =============================
+# УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (с редактированием)
+# =============================
+
 @login_required
 def admin_users(request):
-    """Список всех пользователей с поддержкой AJAX-поиска"""
+    """Список всех пользователей с редактированием профиля"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
     search_query = request.GET.get("q", "").strip()
     role_filter = request.GET.get("role", "").strip()
-
+    user_id = request.GET.get("user_id")
+    
     users = User.objects.all()
-
+    
     # Фильтрация по поиску
     if search_query:
         users = users.filter(
@@ -494,17 +500,60 @@ def admin_users(request):
             Q(name__icontains=search_query) |
             Q(email__icontains=search_query)
         )
-
+    
     # Фильтрация по роли
     if role_filter:
         users = users.filter(role=role_filter)
-
+    
     users = users.order_by("role", "surname")
     users_count = users.count()
     active_count = users.filter(is_active=True).count()
-
-    # Для AJAX запросов возвращаем JSON с HTML
+    
+    # Определяем, является ли текущий пользователь админом
+    is_admin = request.user.role == "ADMIN"
+    
+    # ===== Обработка редактирования пользователя =====
+    selected_user = None
+    edit_form = None
+    
+    if user_id:
+        try:
+            selected_user = User.objects.get(id=user_id)
+            
+            # Обработка POST-запроса (сохранение изменений)
+            if request.method == "POST":
+                edit_form = AdminUserEditForm(
+                    request.POST,
+                    instance=selected_user,
+                    editor=request.user  # Передаём текущего пользователя для проверки прав
+                )
+                
+                if edit_form.is_valid():
+                    edit_form.save()
+                    messages.success(
+                        request,
+                        f"Пользователь {selected_user.surname} {selected_user.name} успешно обновлен"
+                    )
+                    # Возвращаемся к списку с сохранением фильтров
+                    return redirect(f"{request.path}?q={search_query}&role={role_filter}")
+                else:
+                    messages.error(request, "Ошибка при сохранении. Проверьте корректность данных.")
+            else:
+                # GET-запрос — просто открываем форму для редактирования
+                edit_form = AdminUserEditForm(
+                    instance=selected_user,
+                    editor=request.user
+                )
+                
+        except User.DoesNotExist:
+            messages.error(request, "Пользователь не найден")
+            selected_user = None
+            edit_form = None
+    
+    # ===== Для AJAX запросов возвращаем JSON с HTML =====
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.template.loader import render_to_string
+        
         html = render_to_string(
             "tickets/includes/users_table.html",
             {
@@ -514,13 +563,13 @@ def admin_users(request):
             },
             request=request
         )
-
+        
         return JsonResponse({
             "html": html,
             "count": users_count,
         })
-
-    # Обычный HTML ответ
+    
+    # ===== Обычный HTML ответ =====
     return render(
         request,
         "tickets/admin_users.html",
@@ -530,6 +579,9 @@ def admin_users(request):
             "active_count": active_count,
             "search_query": search_query,
             "role_filter": role_filter,
+            "selected_user": selected_user,
+            "edit_form": edit_form,
+            "is_admin": is_admin,
         }
     )
 
