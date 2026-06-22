@@ -225,3 +225,50 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['created_at']
+
+
+class Notification(models.Model):
+    """
+    Уведомление для пользователя.
+    Создаётся автоматически при смене статуса заявки, добавлении комментария и т.д.
+    """
+    class Type(models.TextChoices):
+        STATUS_CHANGED = 'STATUS_CHANGED', 'Изменение статуса'
+        NEW_COMMENT = 'NEW_COMMENT', 'Новый комментарий'
+        TICKET_CREATED = 'TICKET_CREATED', 'Новая заявка'
+        TICKET_ASSIGNED = 'TICKET_ASSIGNED', 'Назначение исполнителя'
+        CHAT_MESSAGE = 'CHAT_MESSAGE', 'Сообщение в чате'
+        APPOINTMENT = 'APPOINTMENT', 'Назначено время приёма'
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        verbose_name="Получатель"
+    )
+    ticket = models.ForeignKey(
+        'Ticket',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='notifications',
+        verbose_name="Связанная заявка"
+    )
+
+    notification_type = models.CharField(
+        max_length=20,
+        choices=Type.choices,
+        verbose_name="Тип уведомления"
+    )
+    message = models.TextField(verbose_name="Текст уведомления")
+    is_read = models.BooleanField(default=False, verbose_name="Прочитано")
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+
+    def __str__(self):
+        return f"Уведомление для {self.user}: {self.message[:50]}"
+
+    class Meta:
+        verbose_name = "Уведомление"
+        verbose_name_plural = "Уведомления"
+        ordering = ['-created_at']
