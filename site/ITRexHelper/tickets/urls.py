@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 
+
 urlpatterns = [
     path('', views.ticket_list, name='ticket_list'),
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -17,3 +18,6 @@ urlpatterns = [
     path('<int:ticket_id>/update/', views.ticket_admin_update, name='ticket_admin_update'),
     path('<int:ticket_id>/add-comment/', views.add_comment, name='add_comment'),
 ]
+
+
+
