@@ -62,9 +62,6 @@ def _paginate(queryset, request):
 
 
 
-# =============================
-# LOGIN
-# =============================
 
 def login_view(request):
 
@@ -79,10 +76,6 @@ def login_view(request):
     )
 
 
-
-# =============================
-# USER TICKETS
-# =============================
 
 
 @login_required
@@ -126,10 +119,6 @@ def ticket_list(request):
 
 
 
-
-# =============================
-# CREATE TICKET
-# =============================
 
 
 @login_required
@@ -183,58 +172,40 @@ def ticket_create(request):
 
 
 
-# =============================
-# ADMIN DASHBOARD
-# =============================
-
 
 @login_required
 def admin_dashboard(request):
-
-
     if not _is_staff(request.user):
-
-        return redirect(
-            "ticket_list"
-        )
-
-
-    tickets = Ticket.objects.all()
-
-
-
+        return redirect("ticket_list")
+    
+    tickets = Ticket.objects.filter(executor=request.user)
+    
+    tickets = _exclude_support_tickets(tickets)
+    
+    assigned_count = tickets.count()
+    in_progress_count = tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
+    closed_month = tickets.filter(status=Ticket.Status.CLOSED).count()
+    open_count = Ticket.objects.filter(status=Ticket.Status.NEW).count() 
+    
+    unread_comments = Comment.objects.filter(
+        ticket__in=tickets,
+        is_internal=False
+    ).exclude(author=request.user).count()
+    
     return render(
-
         request,
-
         "tickets/admin_dashboard.html",
-
         {
-
-        "tickets":
-            tickets,
-
-        "open_count":
-            tickets.filter(
-                status=Ticket.Status.NEW
-            ).count(),
-
-
-        "closed_month":
-            tickets.filter(
-                status=Ticket.Status.CLOSED
-            ).count()
-
+            "tickets": tickets,
+            "open_count": open_count,
+            "closed_month": closed_month,
+            "assigned_count": assigned_count,
+            "in_progress_count": in_progress_count,
+            "unread_comments": unread_comments
         }
-
     )
 
 
-
-
-# =============================
-# ALL TICKETS
-# =============================
 
 
 @login_required
@@ -272,9 +243,6 @@ def admin_tickets(request):
 
 
 
-# =============================
-# ANALYTICS
-# =============================
 
 
 @login_required
@@ -298,10 +266,6 @@ def admin_analytics(request):
 
 
 
-
-# =============================
-# DETAIL
-# =============================
 
 
 @login_required
@@ -348,9 +312,6 @@ def ticket_detail(request, ticket_id):
 
 
 
-# =============================
-# ASSIGN
-# =============================
 
 
 @login_required
@@ -394,11 +355,6 @@ def ticket_assign_self(request,ticket_id):
 
 
 
-# =============================
-# UPDATE STATUS
-# =============================
-
-
 @login_required
 @require_http_methods(["POST"])
 def ticket_update_status(request,ticket_id):
@@ -411,11 +367,6 @@ def ticket_update_status(request,ticket_id):
 
 
 
-
-
-# =============================
-# ADMIN UPDATE
-# =============================
 
 
 @login_required
@@ -502,10 +453,6 @@ def ticket_admin_update(request,ticket_id):
 
 
 
-# =============================
-# COMMENTS
-# =============================
-
 
 @login_required
 @require_http_methods(["POST"])
@@ -551,12 +498,6 @@ def add_comment(request,ticket_id):
     )
 
 
-
-
-
-# =============================
-# USERS
-# =============================
 
 
 @login_required
