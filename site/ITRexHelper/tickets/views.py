@@ -103,7 +103,6 @@ def ticket_create(request):
 
     return redirect("ticket_list")
 
-
 @login_required
 def admin_dashboard(request):
     """Главная страница админа - мои назначенные заявки"""
@@ -112,7 +111,6 @@ def admin_dashboard(request):
 
     all_tickets = _exclude_support_tickets(Ticket.objects.all())
 
-    # Только мои назначенные заявки
     my_tickets = all_tickets.filter(executor=request.user)
 
     # Все новые заявки на сайте (для статистики)
@@ -137,7 +135,6 @@ def admin_dashboard(request):
         ).count()
     except Exception:
         unread_comments = 0
-
     return render(
         request,
         "tickets/admin_dashboard.html",
@@ -160,17 +157,14 @@ def admin_tickets(request):
 
     tickets = _exclude_support_tickets(Ticket.objects.all())
 
-    # Фильтрация по статусу
     status_filter = request.GET.get("status")
     if status_filter and status_filter != "all":
         tickets = tickets.filter(status=status_filter)
 
-    # Фильтрация по приоритету
     priority_filter = request.GET.get("priority")
     if priority_filter and priority_filter != "all":
         tickets = tickets.filter(priority=priority_filter)
 
-    # Фильтрация по исполнителю
     executor_filter = request.GET.get("executor")
     if executor_filter and executor_filter != "all":
         if executor_filter == "none":
@@ -178,7 +172,6 @@ def admin_tickets(request):
         else:
             tickets = tickets.filter(executor_id=executor_filter)
 
-    # Поиск по тексту
     search_query = request.GET.get("search")
     if search_query:
         tickets = tickets.filter(
@@ -187,18 +180,14 @@ def admin_tickets(request):
             Q(author__surname__icontains=search_query) |
             Q(author__name__icontains=search_query)
         )
-
-    # Сортировка
     sort_by = request.GET.get("sort", "-created_at")
     allowed_sorts = ["created_at", "-created_at", "status", "-status", "priority", "-priority"]
     if sort_by not in allowed_sorts:
         sort_by = "-created_at"
     tickets = tickets.order_by(sort_by)
 
-    # Подсчёт общего количества
     tickets_count = tickets.count()
 
-    # Пагинация
     page_obj = _paginate(tickets, request, per_page=15)
 
     return render(
@@ -231,17 +220,14 @@ def admin_analytics(request):
     tickets = _exclude_support_tickets(Ticket.objects.all())
     now = timezone.now()
 
-    # ====== Общая статистика ======
     total_count = tickets.count()
     in_progress_count = tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
 
-    # Просроченные заявки (созданы > 7 дней назад и не закрыты)
     deadline = now - timedelta(days=7)
     overdue_count = tickets.exclude(
         status__in=[Ticket.Status.CLOSED, Ticket.Status.CANCELED, Ticket.Status.REJECTED]
     ).filter(created_at__lt=deadline).count()
 
-    # ====== Статистика за текущий месяц ======
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     tickets_month = tickets.filter(created_at__gte=month_start).count()
     processed_month = tickets.filter(
@@ -249,7 +235,6 @@ def admin_analytics(request):
         updated_at__gte=month_start
     ).count()
 
-    # ====== График динамики за 6 месяцев ======
     six_months_ago = now - timedelta(days=180)
     monthly_stats = (
         tickets
@@ -260,17 +245,13 @@ def admin_analytics(request):
         .order_by("month")
     )
 
-    # Формируем данные для графика
     chart_months = []
     chart_values = []
-
-    # Создаём список всех 6 месяцев (даже если нет данных)
     for i in range(5, -1, -1):
         month_date = (now - timedelta(days=30 * i)).replace(day=1)
         month_name = month_date.strftime("%B %Y")
         chart_months.append(month_name)
 
-        # Ищем значение для этого месяца
         month_count = 0
         for stat in monthly_stats:
             if stat["month"].strftime("%B %Y") == month_name:
@@ -278,11 +259,9 @@ def admin_analytics(request):
                 break
         chart_values.append(month_count)
 
-    # Нормализуем высоты для графика (max = 100%)
     max_value = max(chart_values) if chart_values and max(chart_values) > 0 else 1
     chart_bars = [int((v / max_value) * 100) for v in chart_values]
 
-    # ====== Журнал аудита (последние 20 изменений статусов) ======
     audit_logs = TicketStatusHistory.objects.select_related("ticket").order_by("-changed_at")[:20]
 
     return render(
@@ -301,24 +280,20 @@ def admin_analytics(request):
     )
 
 
-
 @login_required
 def ticket_detail(request, ticket_id):
     """Детальный просмотр заявки"""
     ticket = get_object_or_404(Ticket, id=ticket_id)
 
-    # Проверка прав доступа для клиента
     if request.user.role == "CLIENT" and ticket.author != request.user:
         messages.error(request, "У вас нет доступа к этой заявке")
         return redirect("ticket_list")
 
-    # Клиент не видит внутренние заметки
     if request.user.role == "CLIENT":
         comments = ticket.comments.filter(is_internal=False)
     else:
         comments = ticket.comments.all()
 
-    # История статусов - только для сотрудников
     status_history = None
     if _is_staff(request.user):
         status_history = ticket.status_history.all()
@@ -351,7 +326,6 @@ def ticket_assign_self(request, ticket_id):
     ticket.status = Ticket.Status.IN_PROGRESS
     ticket.save()
 
-    # Записываем в историю
     TicketStatusHistory.objects.create(
         ticket=ticket,
         old_status=old_status,
@@ -384,7 +358,6 @@ def ticket_update_status(request, ticket_id):
         messages.error(request, "Недопустимый статус")
         return redirect("ticket_detail", ticket_id=ticket_id)
 
-    # Проверка допустимости перехода
     allowed_transitions = {
         Ticket.Status.NEW: [Ticket.Status.IN_PROGRESS, Ticket.Status.CANCELED, Ticket.Status.REJECTED],
         Ticket.Status.IN_PROGRESS: [Ticket.Status.WAITING, Ticket.Status.CLOSED, Ticket.Status.REJECTED],
@@ -403,7 +376,6 @@ def ticket_update_status(request, ticket_id):
     ticket.status = new_status
     ticket.save()
 
-    # Записываем в историю
     TicketStatusHistory.objects.create(
         ticket=ticket,
         old_status=old_status,
@@ -427,7 +399,6 @@ def ticket_admin_update(request, ticket_id):
 
     old_status = ticket.status
 
-    # Обновляем только переданные поля
     new_status = request.POST.get("status")
     if new_status and new_status != ticket.status:
         if new_status in dict(Ticket.Status.choices):
@@ -442,7 +413,6 @@ def ticket_admin_update(request, ticket_id):
     if new_description is not None and new_description != ticket.description:
         ticket.description = new_description
 
-    # Назначение исполнителя (если передан ID)
     executor_id = request.POST.get("executor_id")
     if executor_id:
         try:
@@ -453,7 +423,6 @@ def ticket_admin_update(request, ticket_id):
 
     ticket.save()
 
-    # Записываем в историю только если статус изменился
     if old_status != ticket.status:
         TicketStatusHistory.objects.create(
             ticket=ticket,
@@ -465,7 +434,6 @@ def ticket_admin_update(request, ticket_id):
 
     messages.success(request, "Заявка успешно обновлена")
 
-    # Редирект на страницу, откуда пришли
     next_url = request.POST.get("next")
     if next_url:
         return redirect(next_url)
@@ -490,7 +458,6 @@ def add_comment(request, ticket_id):
         comment.ticket = ticket
         comment.author = request.user
 
-        # Защита: клиенты не могут создавать внутренние заметки
         if request.user.role == "CLIENT":
             comment.is_internal = False
 
