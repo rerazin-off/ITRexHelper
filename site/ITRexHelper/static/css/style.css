@@ -577,6 +577,11 @@ img {
     gap: 12px;
 }
 
+.toolbar__actions .btn {
+    height: 46px;
+    min-height: 46px;
+}
+
 .search-field {
     position: relative;
     min-width: 280px;

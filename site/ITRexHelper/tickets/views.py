@@ -5,88 +5,163 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.db.models.functions import TruncMonth
-from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
-from django.template.loader import render_to_string
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from .models import Ticket, TicketStatusHistory, Comment, Notification
-from .forms import TicketCreateForm, CommentForm
-from users.forms import AdminUserEditForm
+from .forms import CommentForm, TicketCreateForm
+from .models import (
+    Comment,
+    Notification,
+    SupportConversation,
+    SupportMessage,
+    Ticket,
+    TicketStatusHistory,
+)
+
 
 User = get_user_model()
 
-SUPPORT_TICKET_TITLE = "Чат поддержки"
-
+SUPPORT_TICKET_TITLE = "Р§Р°С‚ РїРѕРґРґРµСЂР¶РєРё"
+TERMINAL_STATUSES = {
+    Ticket.Status.CLOSED,
+    Ticket.Status.REJECTED,
+    Ticket.Status.CANCELED,
+}
+READONLY_STATUSES = {
+    Ticket.Status.CLOSED,
+    Ticket.Status.REJECTED,
+}
 
 
 def _is_staff(user):
-    """Проверяет, является ли пользователь сотрудником или админом"""
-    return user.role in ["STAFF", "ADMIN"]
+    return user.is_authenticated and (
+        user.is_staff
+        or user.is_superuser
+        or user.role in ["STAFF", "ADMIN"]
+    )
+
+
+def _staff_users():
+    return User.objects.filter(
+        Q(role__in=["STAFF", "ADMIN"]) | Q(is_staff=True) | Q(is_superuser=True)
+    ).distinct()
 
 
 def _exclude_support_tickets(queryset):
-    """Исключает служебные тикеты поддержки"""
     return queryset.exclude(title=SUPPORT_TICKET_TITLE)
 
 
-def _paginate(queryset, request, per_page=10):
-    """Пагинация с учётом текущей страницы"""
-    paginator = Paginator(queryset, per_page)
+def _paginate(queryset, request):
+    paginator = Paginator(queryset, 10)
     return paginator.get_page(request.GET.get("page"))
 
 
-def _get_query_string(request):
-    """Возвращает строку запроса без параметра page (для пагинации)"""
-    query = request.GET.copy()
-    query.pop('page', None)
-    return query.urlencode()
+def _notify_users(recipients, title, message, kind, actor=None, ticket=None):
+    seen = set()
+    for recipient in recipients:
+        if not recipient or not getattr(recipient, "pk", None) or recipient.pk in seen:
+            continue
+        seen.add(recipient.pk)
+        if actor and recipient.pk == actor.pk:
+            continue
+        Notification.objects.create(
+            recipient=recipient,
+            actor=actor,
+            ticket=ticket,
+            kind=kind,
+            title=title,
+            message=message,
+        )
+
+
+def _get_client_conversation(user):
+    conversation = SupportConversation.objects.filter(client=user).order_by("-updated_at").first()
+    if conversation:
+        return conversation
+    return SupportConversation.objects.create(client=user, subject="Чат поддержки")
+
+
+def _ticket_is_overdue(ticket):
+    if ticket.status in TERMINAL_STATUSES:
+        return False
+    if ticket.deadline:
+        return timezone.now() > ticket.deadline
+    return timezone.now() > ticket.created_at + timedelta(days=7)
+
+
+def _common_context(user):
+    return {
+        "unread_notifications": user.notifications.filter(is_read=False)[:5],
+        "unread_notifications_count": user.notifications.filter(is_read=False).count(),
+    }
 
 
 # =============================
-# АВТОРИЗАЦИЯ
+# LOGIN
 # =============================
+
 
 def login_view(request):
-    """Заглушка для логина - редирект на список заявок"""
     if request.user.is_authenticated:
-        if _is_staff(request.user):
-            return redirect("admin_dashboard")
         return redirect("ticket_list")
-    return redirect("ticket_list")
+    return redirect("login")
 
 
 # =============================
-# СПИСОК ЗАЯВОК КЛИЕНТА
+# USER TICKETS
 # =============================
+
 
 @login_required
 def ticket_list(request):
-    """Список заявок клиента"""
     if _is_staff(request.user):
         return redirect("admin_dashboard")
 
-    tickets = Ticket.objects.filter(author=request.user)
+    tickets = Ticket.objects.filter(author=request.user).order_by("-created_at")
     tickets = _exclude_support_tickets(tickets)
+
+    search_query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "")
+
+    if search_query:
+        tickets = tickets.filter(
+            Q(description__icontains=search_query)
+            | Q(title__icontains=search_query)
+            | Q(contact_info__icontains=search_query)
+        )
+    if status_filter:
+        tickets = tickets.filter(status=status_filter)
+
+    conversation = SupportConversation.objects.filter(client=request.user).order_by("-updated_at").first()
+    chat_comments = []
+    if conversation:
+        chat_comments = conversation.messages.select_related("author")
 
     return render(
         request,
         "tickets/ticket_list.html",
         {
+            **_common_context(request.user),
             "tickets": tickets,
             "form": TicketCreateForm(),
             "tickets_count": tickets.count(),
-        }
+            "chat_comments": chat_comments,
+            "status_choices": Ticket.Status.choices,
+            "search_query": search_query,
+            "status_filter": status_filter,
+        },
     )
 
+
+# =============================
+# CREATE TICKET
+# =============================
 
 
 @login_required
 @require_http_methods(["POST"])
 def ticket_create(request):
-    """Создание новой заявки клиентом"""
     form = TicketCreateForm(request.POST)
 
     if form.is_valid():
@@ -97,236 +172,209 @@ def ticket_create(request):
 
         TicketStatusHistory.objects.create(
             ticket=ticket,
-            old_status=None,
             new_status=Ticket.Status.NEW,
             changed_by=request.user,
-            comment="Создание заявки"
+            comment="Создание заявки",
         )
 
-        messages.success(request, "Заявка успешно создана")
+        _notify_users(
+            _staff_users(),
+            title=f"Новая заявка #IT-{ticket.id}",
+            message=f"{request.user} создал(а) новую заявку.",
+            kind=Notification.Kind.TICKET,
+            actor=request.user,
+            ticket=ticket,
+        )
+
+        messages.success(request, "Заявка создана")
     else:
-        messages.error(request, "Ошибка при создании заявки. Проверьте заполнение полей.")
+        messages.error(request, "Не удалось создать заявку. Проверьте заполнение формы.")
 
     return redirect("ticket_list")
 
+
+# =============================
+# ADMIN DASHBOARD
+# =============================
+
+
 @login_required
 def admin_dashboard(request):
-    """Главная страница админа - мои назначенные заявки"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
-    all_tickets = _exclude_support_tickets(Ticket.objects.all())
+    tickets = Ticket.objects.select_related("author", "executor").order_by("-created_at")
+    assigned = tickets.filter(executor=request.user)
 
-    my_tickets = all_tickets.filter(executor=request.user)
-
-    # Все новые заявки на сайте (для статистики)
-    open_count = all_tickets.filter(status=Ticket.Status.NEW).count()
-
-    # Мои заявки в работе
-    in_progress_count = my_tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
-
-    # Закрыто за текущий месяц
-    now = timezone.now()
-    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    closed_month = my_tickets.filter(
-        status=Ticket.Status.CLOSED,
-        updated_at__gte=month_start
-    ).count()
-
-    # Непрочитанные уведомления (для виджета "Необработанные обращения")
-    try:
-        unread_comments = Notification.objects.filter(
-            user=request.user,
-            is_read=False
-        ).count()
-    except Exception:
-        unread_comments = 0
     return render(
         request,
         "tickets/admin_dashboard.html",
         {
-            "tickets": my_tickets.order_by("-created_at")[:10],
-            "open_count": open_count,
-            "assigned_count": my_tickets.count(),
-            "in_progress_count": in_progress_count,
-            "closed_month": closed_month,
-            "unread_comments": unread_comments,
-        }
+            **_common_context(request.user),
+            "tickets": assigned[:10],
+            "open_count": tickets.filter(status=Ticket.Status.NEW).count(),
+            "closed_month": tickets.filter(status=Ticket.Status.CLOSED).count(),
+            "assigned_count": assigned.count(),
+            "in_progress_count": assigned.filter(status=Ticket.Status.IN_PROGRESS).count(),
+            "unread_comments": request.user.notifications.filter(is_read=False).count(),
+            "status_choices": Ticket.Status.choices,
+            "priority_choices": Ticket.Priority.choices,
+        },
     )
+
+
+# =============================
+# ALL TICKETS
+# =============================
 
 
 @login_required
 def admin_tickets(request):
-    """Все заявки с фильтрацией и пагинацией"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
-    tickets = _exclude_support_tickets(Ticket.objects.all())
+    tickets = Ticket.objects.select_related("author", "executor").order_by("-created_at")
+    tickets = _exclude_support_tickets(tickets)
 
-    status_filter = request.GET.get("status")
-    if status_filter and status_filter != "all":
-        tickets = tickets.filter(status=status_filter)
+    search_query = request.GET.get("q", "").strip()
+    status_filter = request.GET.get("status", "")
+    priority_filter = request.GET.get("priority", "")
 
-    priority_filter = request.GET.get("priority")
-    if priority_filter and priority_filter != "all":
-        tickets = tickets.filter(priority=priority_filter)
-
-    executor_filter = request.GET.get("executor")
-    if executor_filter and executor_filter != "all":
-        if executor_filter == "none":
-            tickets = tickets.filter(executor__isnull=True)
-        else:
-            tickets = tickets.filter(executor_id=executor_filter)
-
-    search_query = request.GET.get("search")
     if search_query:
         tickets = tickets.filter(
-            Q(title__icontains=search_query) |
-            Q(description__icontains=search_query) |
-            Q(author__surname__icontains=search_query) |
-            Q(author__name__icontains=search_query)
+            Q(description__icontains=search_query)
+            | Q(title__icontains=search_query)
+            | Q(contact_info__icontains=search_query)
+            | Q(author__surname__icontains=search_query)
+            | Q(author__name__icontains=search_query)
+            | Q(author__company_name__icontains=search_query)
         )
-    sort_by = request.GET.get("sort", "-created_at")
-    allowed_sorts = ["created_at", "-created_at", "status", "-status", "priority", "-priority"]
-    if sort_by not in allowed_sorts:
-        sort_by = "-created_at"
-    tickets = tickets.order_by(sort_by)
+    if status_filter:
+        tickets = tickets.filter(status=status_filter)
+    if priority_filter:
+        tickets = tickets.filter(priority=priority_filter)
 
     tickets_count = tickets.count()
-    page_obj = _paginate(tickets, request, per_page=15)
+    page_obj = _paginate(tickets, request)
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
 
     return render(
         request,
         "tickets/admin_tickets.html",
         {
+            **_common_context(request.user),
             "tickets": page_obj,
             "page_obj": page_obj,
             "tickets_count": tickets_count,
-            "query_string": _get_query_string(request),
+            "query_string": query_params.urlencode(),
             "status_choices": Ticket.Status.choices,
             "priority_choices": Ticket.Priority.choices,
-            "executors": User.objects.filter(role__in=["STAFF", "ADMIN"]),
-            "current_status": status_filter or "all",
-            "current_priority": priority_filter or "all",
-            "current_executor": executor_filter or "all",
-            "current_sort": sort_by,
-            "search_query": search_query or "",
-        }
+            "search_query": search_query,
+            "status_filter": status_filter,
+            "priority_filter": priority_filter,
+        },
     )
 
+
+# =============================
+# ANALYTICS
+# =============================
 
 
 @login_required
 def admin_analytics(request):
-    """Страница аналитики с графиками и отчётами"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
-    tickets = _exclude_support_tickets(Ticket.objects.all())
-    now = timezone.now()
-
-    total_count = tickets.count()
-    in_progress_count = tickets.filter(status=Ticket.Status.IN_PROGRESS).count()
-
-    deadline = now - timedelta(days=7)
-    overdue_count = tickets.exclude(
-        status__in=[Ticket.Status.CLOSED, Ticket.Status.CANCELED, Ticket.Status.REJECTED]
-    ).filter(created_at__lt=deadline).count()
-
-    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    tickets_month = tickets.filter(created_at__gte=month_start).count()
-    processed_month = tickets.filter(
-        status=Ticket.Status.CLOSED,
-        updated_at__gte=month_start
-    ).count()
-
-    six_months_ago = now - timedelta(days=180)
-    monthly_stats = (
-        tickets
-        .filter(created_at__gte=six_months_ago)
-        .annotate(month=TruncMonth("created_at"))
-        .values("month")
-        .annotate(count=Count("id"))
-        .order_by("month")
-    )
+    now = timezone.localtime(timezone.now())
+    tickets = Ticket.objects.all()
 
     chart_months = []
     chart_values = []
-    for i in range(5, -1, -1):
-        month_date = (now - timedelta(days=30 * i)).replace(day=1)
-        month_name = month_date.strftime("%B %Y")
-        chart_months.append(month_name)
-
-        month_count = 0
-        for stat in monthly_stats:
-            if stat["month"].strftime("%B %Y") == month_name:
-                month_count = stat["count"]
-                break
+    for offset in range(5, -1, -1):
+        month = now.month - offset
+        year = now.year
+        while month <= 0:
+            month += 12
+            year -= 1
+        month_count = tickets.filter(created_at__year=year, created_at__month=month).count()
         chart_values.append(month_count)
+        chart_months.append(f"{month:02d}.{str(year)[-2:]}")
 
-    max_value = max(chart_values) if chart_values and max(chart_values) > 0 else 1
-    chart_bars = [int((v / max_value) * 100) for v in chart_values]
+    max_value = max(chart_values) if chart_values else 0
+    chart_bars = [
+        max(12, round(value / max_value * 100)) if max_value else 12
+        for value in chart_values
+    ]
 
-    audit_logs = TicketStatusHistory.objects.select_related("ticket").order_by("-changed_at")[:20]
+    overdue_count = sum(1 for ticket in tickets if _ticket_is_overdue(ticket))
 
     return render(
         request,
         "tickets/admin_analytics.html",
         {
-            "total_count": total_count,
-            "in_progress_count": in_progress_count,
+            **_common_context(request.user),
+            "total_count": tickets.count(),
+            "tickets_month": tickets.filter(created_at__year=now.year, created_at__month=now.month).count(),
+            "processed_month": tickets.filter(
+                updated_at__year=now.year,
+                updated_at__month=now.month,
+                status__in=TERMINAL_STATUSES,
+            ).count(),
+            "in_progress_count": tickets.filter(status=Ticket.Status.IN_PROGRESS).count(),
             "overdue_count": overdue_count,
-            "tickets_month": tickets_month,
-            "processed_month": processed_month,
             "chart_bars": chart_bars,
             "chart_months": chart_months,
-            "audit_logs": audit_logs,
-        }
+            "audit_logs": TicketStatusHistory.objects.select_related("ticket").order_by("-changed_at")[:20],
+        },
     )
+
+
+# =============================
+# DETAIL
+# =============================
 
 
 @login_required
 def ticket_detail(request, ticket_id):
-    """Детальный просмотр заявки"""
-    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket = get_object_or_404(Ticket.objects.select_related("author", "executor"), id=ticket_id)
 
-    if request.user.role == "CLIENT" and ticket.author != request.user:
-        messages.error(request, "У вас нет доступа к этой заявке")
+    if not _is_staff(request.user) and ticket.author_id != request.user.id:
+        messages.error(request, "У вас нет доступа к этой заявке.")
         return redirect("ticket_list")
 
-    if request.user.role == "CLIENT":
-        comments = ticket.comments.filter(is_internal=False)
-    else:
-        comments = ticket.comments.all()
-
-    status_history = None
-    if _is_staff(request.user):
-        status_history = ticket.status_history.all()
+    comments = ticket.comments.select_related("author")
+    if not _is_staff(request.user):
+        comments = comments.filter(is_internal=False)
 
     return render(
         request,
         "tickets/ticket_detail.html",
         {
+            **_common_context(request.user),
             "ticket": ticket,
             "comments": comments,
-            "status_history": status_history,
+            "status_history": ticket.status_history.select_related("changed_by"),
             "comment_form": CommentForm(),
-        }
+        },
     )
 
+
+# =============================
+# ASSIGN
+# =============================
 
 
 @login_required
 @require_http_methods(["POST"])
 def ticket_assign_self(request, ticket_id):
-    """Сотрудник назначает себя исполнителем заявки"""
     if not _is_staff(request.user):
-        messages.error(request, "Только сотрудники могут назначать себя исполнителем")
-        return redirect("admin_tickets")
+        return redirect("ticket_list")
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
-
     old_status = ticket.status
+
     ticket.executor = request.user
     ticket.status = Ticket.Status.IN_PROGRESS
     ticket.save()
@@ -336,124 +384,104 @@ def ticket_assign_self(request, ticket_id):
         old_status=old_status,
         new_status=Ticket.Status.IN_PROGRESS,
         changed_by=request.user,
-        comment=f"Сотрудник {request.user.surname} {request.user.name} назначил себя исполнителем"
+        comment="Назначено сотруднику",
     )
 
-    messages.success(request, "Вы назначены исполнителем")
-    return redirect("ticket_detail", ticket_id=ticket_id)
+    _notify_users(
+        [ticket.author],
+        title=f"Заявка #IT-{ticket.id} взята в работу",
+        message=f"{request.user} назначен(а) исполнителем заявки.",
+        kind=Notification.Kind.STATUS,
+        actor=request.user,
+        ticket=ticket,
+    )
+
+    return redirect("admin_tickets")
+
+
+# =============================
+# UPDATE STATUS
+# =============================
+
 
 @login_required
 @require_http_methods(["POST"])
 def ticket_update_status(request, ticket_id):
-    """Изменение статуса заявки (для сотрудников)"""
+    return ticket_admin_update(request, ticket_id)
+
+
+# =============================
+# ADMIN UPDATE
+# =============================
+
+
+@login_required
+@require_http_methods(["POST"])
+def ticket_admin_update(request, ticket_id):
     if not _is_staff(request.user):
-        messages.error(request, "Только сотрудники могут изменять статус")
-        return redirect("ticket_detail", ticket_id=ticket_id)
+        return redirect("ticket_list")
 
     ticket = get_object_or_404(Ticket, id=ticket_id)
+    next_url = request.POST.get("next") or "admin_tickets"
+
+    if ticket.status in READONLY_STATUSES:
+        messages.error(request, "Завершенную или отклоненную заявку нельзя редактировать.")
+        return redirect(next_url)
 
     old_status = ticket.status
-    new_status = request.POST.get("status")
-
-    if not new_status:
-        messages.error(request, "Статус не указан")
-        return redirect("ticket_detail", ticket_id=ticket_id)
-
-    if new_status not in dict(Ticket.Status.choices):
-        messages.error(request, "Недопустимый статус")
-        return redirect("ticket_detail", ticket_id=ticket_id)
-
-    allowed_transitions = {
-        Ticket.Status.NEW: [Ticket.Status.IN_PROGRESS, Ticket.Status.CANCELED, Ticket.Status.REJECTED],
-        Ticket.Status.IN_PROGRESS: [Ticket.Status.WAITING, Ticket.Status.CLOSED, Ticket.Status.REJECTED],
-        Ticket.Status.WAITING: [Ticket.Status.IN_PROGRESS, Ticket.Status.CLOSED],
-    }
-
-    if old_status in allowed_transitions and new_status not in allowed_transitions[old_status]:
-        old_display = ticket.get_status_display()
-        new_display = dict(Ticket.Status.choices).get(new_status, new_status)
-        messages.error(
-            request,
-            f"Недопустимый переход: из «{old_display}» в «{new_display}»"
-        )
-        return redirect("ticket_detail", ticket_id=ticket_id)
+    new_status = request.POST.get("status") or ticket.status
 
     ticket.status = new_status
+    ticket.priority = request.POST.get("priority", ticket.priority)
+    ticket.description = request.POST.get("description", ticket.description)
+    ticket.contact_info = request.POST.get("contact_info", ticket.contact_info)
+    ticket.executor = request.user
     ticket.save()
 
     TicketStatusHistory.objects.create(
         ticket=ticket,
         old_status=old_status,
-        new_status=new_status,
+        new_status=ticket.status,
         changed_by=request.user,
-        comment=f"Статус изменен на «{ticket.get_status_display()}»"
+        comment="Обновление заявки",
     )
 
-    messages.success(request, f"Статус изменен на «{ticket.get_status_display()}»")
-    return redirect("ticket_detail", ticket_id=ticket_id)
-
-@login_required
-@require_http_methods(["POST"])
-def ticket_admin_update(request, ticket_id):
-    """Полное обновление заявки админом (через модалку)"""
-    if not _is_staff(request.user):
-        messages.error(request, "Только сотрудники могут редактировать заявки")
-        return redirect("ticket_detail", ticket_id=ticket_id)
-
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-
-    old_status = ticket.status
-
-    new_status = request.POST.get("status")
-    if new_status and new_status != ticket.status:
-        if new_status in dict(Ticket.Status.choices):
-            ticket.status = new_status
-
-    new_priority = request.POST.get("priority")
-    if new_priority and new_priority != ticket.priority:
-        if new_priority in dict(Ticket.Priority.choices):
-            ticket.priority = new_priority
-
-    new_description = request.POST.get("description")
-    if new_description is not None and new_description != ticket.description:
-        ticket.description = new_description
-
-    executor_id = request.POST.get("executor_id")
-    if executor_id:
-        try:
-            executor = User.objects.get(id=executor_id, role__in=["STAFF", "ADMIN"])
-            ticket.executor = executor
-        except User.DoesNotExist:
-            pass
-
-    ticket.save()
-
     if old_status != ticket.status:
-        TicketStatusHistory.objects.create(
+        _notify_users(
+            [ticket.author],
+            title=f"Статус заявки #IT-{ticket.id} изменен",
+            message=f"Новый статус: {ticket.get_status_display()}",
+            kind=Notification.Kind.STATUS,
+            actor=request.user,
             ticket=ticket,
-            old_status=old_status,
-            new_status=ticket.status,
-            changed_by=request.user,
-            comment="Заявка обновлена через админ-панель"
+        )
+    else:
+        _notify_users(
+            [ticket.author],
+            title=f"Заявка #IT-{ticket.id} обновлена",
+            message="Сотрудник поддержки обновил данные заявки.",
+            kind=Notification.Kind.TICKET,
+            actor=request.user,
+            ticket=ticket,
         )
 
-    messages.success(request, "Заявка успешно обновлена")
+    messages.success(request, "Заявка обновлена.")
+    return redirect(next_url)
 
-    next_url = request.POST.get("next")
-    if next_url:
-        return redirect(next_url)
-    return redirect("ticket_detail", ticket_id=ticket_id)
+
+# =============================
+# COMMENTS
+# =============================
 
 
 @login_required
 @require_http_methods(["POST"])
 def add_comment(request, ticket_id):
-    """Добавление комментария к заявке"""
-    ticket = get_object_or_404(Ticket, id=ticket_id)
+    ticket = get_object_or_404(Ticket.objects.select_related("author", "executor"), id=ticket_id)
 
-    if request.user.role == "CLIENT" and ticket.author != request.user:
-        messages.error(request, "У вас нет доступа к этой заявке")
-        return redirect("ticket_detail", ticket_id=ticket_id)
+    if not _is_staff(request.user) and ticket.author_id != request.user.id:
+        messages.error(request, "У вас нет доступа к этой заявке.")
+        return redirect("ticket_list")
 
     form = CommentForm(request.POST)
 
@@ -461,224 +489,169 @@ def add_comment(request, ticket_id):
         comment = form.save(commit=False)
         comment.ticket = ticket
         comment.author = request.user
-
-        if request.user.role == "CLIENT":
+        if not _is_staff(request.user):
             comment.is_internal = False
-
         comment.save()
-        messages.success(request, "Комментарий добавлен")
+
+        if comment.is_internal:
+            recipients = list(_staff_users())
+        elif _is_staff(request.user):
+            recipients = [ticket.author]
+        else:
+            recipients = list(_staff_users())
+            if ticket.executor:
+                recipients.append(ticket.executor)
+
+        _notify_users(
+            recipients,
+            title=f"Комментарий к заявке #IT-{ticket.id}",
+            message=f"{request.user} добавил(а) комментарий.",
+            kind=Notification.Kind.COMMENT,
+            actor=request.user,
+            ticket=ticket,
+        )
+        messages.success(request, "Комментарий добавлен.")
     else:
-        messages.error(request, "Комментарий не может быть пустым")
+        messages.error(request, "Комментарий не может быть пустым.")
 
-    return redirect("ticket_detail", ticket_id=ticket_id)
+    return redirect("ticket_detail", ticket_id=ticket.id)
+
+
+# =============================
+# NOTIFICATIONS
+# =============================
+
+
+@login_required
+@require_http_methods(["POST"])
+def notification_mark_read(request, notification_id):
+    Notification.objects.filter(id=notification_id, recipient=request.user).update(is_read=True)
+    return redirect(request.POST.get("next") or "ticket_list")
 
 
 # =============================
-# УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (ИСПРАВЛЕНО ДЛЯ AJAX)
+# USERS
 # =============================
 
-# =============================
-# УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (с редактированием)
-# =============================
 
 @login_required
 def admin_users(request):
-    """Список всех пользователей с редактированием профиля"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
-    search_query = request.GET.get("q", "").strip()
-    role_filter = request.GET.get("role", "").strip()
-    user_id = request.GET.get("user_id")
-    
-    users = User.objects.all()
-    
-    # Фильтрация по поиску
-    if search_query:
-        users = users.filter(
-            Q(surname__icontains=search_query) |
-            Q(name__icontains=search_query) |
-            Q(email__icontains=search_query)
-        )
-    
-    # Фильтрация по роли
-    if role_filter:
-        users = users.filter(role=role_filter)
-    
-    users = users.order_by("role", "surname")
-    users_count = users.count()
-    active_count = users.filter(is_active=True).count()
-    
-    # Определяем, является ли текущий пользователь админом
-    is_admin = request.user.role == "ADMIN"
-    
-    # ===== Обработка редактирования пользователя =====
-    selected_user = None
-    edit_form = None
-    
-    if user_id:
-        try:
-            selected_user = User.objects.get(id=user_id)
-            
-            # Обработка POST-запроса (сохранение изменений)
-            if request.method == "POST":
-                edit_form = AdminUserEditForm(
-                    request.POST,
-                    instance=selected_user,
-                    editor=request.user  # Передаём текущего пользователя для проверки прав
-                )
-                
-                if edit_form.is_valid():
-                    edit_form.save()
-                    messages.success(
-                        request,
-                        f"Пользователь {selected_user.surname} {selected_user.name} успешно обновлен"
-                    )
-                    # Возвращаемся к списку с сохранением фильтров
-                    return redirect(f"{request.path}?q={search_query}&role={role_filter}")
-                else:
-                    messages.error(request, "Ошибка при сохранении. Проверьте корректность данных.")
-            else:
-                # GET-запрос — просто открываем форму для редактирования
-                edit_form = AdminUserEditForm(
-                    instance=selected_user,
-                    editor=request.user
-                )
-                
-        except User.DoesNotExist:
-            messages.error(request, "Пользователь не найден")
-            selected_user = None
-            edit_form = None
-    
-    # ===== Для AJAX запросов возвращаем JSON с HTML =====
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.template.loader import render_to_string
-        
-        html = render_to_string(
-            "tickets/includes/users_table.html",
-            {
-                "users": users,
-                "users_count": users_count,
-                "active_count": active_count,
-            },
-            request=request
-        )
-        
-        return JsonResponse({
-            "html": html,
-            "count": users_count,
-        })
-    
-    # ===== Обычный HTML ответ =====
     return render(
         request,
         "tickets/admin_users.html",
         {
-            "users": users,
-            "users_count": users_count,
-            "active_count": active_count,
-            "search_query": search_query,
-            "role_filter": role_filter,
-            "selected_user": selected_user,
-            "edit_form": edit_form,
-            "is_admin": is_admin,
-        }
+            **_common_context(request.user),
+            "users": User.objects.all(),
+        },
     )
 
 
-# =============================
-# ЧАТ АДМИНА
-# =============================
-
 @login_required
+@require_http_methods(["GET", "POST"])
 def admin_chat(request):
-    """Интерфейс чата для сотрудников"""
     if not _is_staff(request.user):
         return redirect("ticket_list")
 
-    return render(request, "tickets/admin_chat.html")
+    if request.method == "POST":
+        conversation = get_object_or_404(SupportConversation, id=request.POST.get("conversation_id"))
+        text = request.POST.get("text", "").strip()
+        if text:
+            SupportMessage.objects.create(
+                conversation=conversation,
+                author=request.user,
+                text=text,
+            )
+            if conversation.assigned_to_id is None:
+                conversation.assigned_to = request.user
+            conversation.status = SupportConversation.Status.WAITING_CLIENT
+            conversation.save()
 
+            _notify_users(
+                [conversation.client],
+                title="Ответ поддержки",
+                message="Сотрудник поддержки ответил в чате.",
+                kind=Notification.Kind.CHAT,
+                actor=request.user,
+                ticket=conversation.ticket,
+            )
+            messages.success(request, "Сообщение отправлено.")
+        return redirect(f"{request.path}?client={conversation.client_id}")
 
-# =============================
-# ЧАТ ПОДДЕРЖКИ (КЛИЕНТ)
-# =============================
+    conversations = SupportConversation.objects.select_related("client", "assigned_to").annotate(
+        message_count=Count("messages")
+    ).filter(message_count__gt=0).order_by("-updated_at")
 
-@login_required
-def support_chat(request):
-    """Заглушка для чата поддержки клиента"""
-    return redirect("ticket_list")
+    clients = []
+    seen_clients = set()
+    for conversation in conversations:
+        if conversation.client_id in seen_clients:
+            continue
+        seen_clients.add(conversation.client_id)
+        conversation.client.support_conversation = conversation
+        conversation.client.latest_support_message = conversation.messages.order_by("-created_at").first()
+        clients.append(conversation.client)
 
+    selected_client = None
+    selected_conversation = None
+    selected_client_id = request.GET.get("client")
 
-# =============================
-# API: Список пользователей
-# =============================
+    if selected_client_id:
+        selected_conversation = conversations.filter(client_id=selected_client_id).first()
+    elif clients:
+        selected_conversation = conversations.filter(client=clients[0]).first()
 
-@login_required
-def api_users_list(request):
-    """API endpoint для получения списка пользователей"""
-    if not _is_staff(request.user):
-        return JsonResponse({"error": "Доступ запрещён"}, status=403)
+    if selected_conversation:
+        selected_client = selected_conversation.client
 
-    query = request.GET.get("q", "").strip()
-    role = request.GET.get("role", "").strip()
-
-    users = User.objects.filter(role__in=["STAFF", "ADMIN"])
-
-    if query:
-        users = users.filter(
-            Q(surname__icontains=query) |
-            Q(name__icontains=query) |
-            Q(email__icontains=query)
-        )
-
-    if role and role != "all":
-        users = users.filter(role=role)
-
-    data = [
+    return render(
+        request,
+        "tickets/admin_chat.html",
         {
-            "id": user.id,
-            "surname": user.surname,
-            "name": user.name,
-            "email": user.email,
-            "role": user.role,
-            "role_display": user.get_role_display(),
-            "full_name": f"{user.surname} {user.name}"
-        }
-        for user in users.order_by("surname", "name")
-    ]
+            **_common_context(request.user),
+            "clients": clients,
+            "selected_client": selected_client,
+            "selected_conversation": selected_conversation,
+            "messages_list": (
+                selected_conversation.messages.select_related("author")
+                if selected_conversation
+                else []
+            ),
+            "active_chats": SupportConversation.objects.exclude(
+                status=SupportConversation.Status.RESOLVED
+            ).count(),
+        },
+    )
 
-    return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False})
-
-
-# =============================
-# API: Список статусов заявок
-# =============================
 
 @login_required
-def api_ticket_statuses(request):
-    """API endpoint для получения списка статусов заявок"""
-    if not _is_staff(request.user):
-        return JsonResponse({"error": "Доступ запрещён"}, status=403)
+@require_http_methods(["POST"])
+def support_chat(request):
+    if _is_staff(request.user):
+        return redirect("admin_chat")
 
-    data = [
-        {"value": value, "label": label}
-        for value, label in Ticket.Status.choices
-    ]
-    return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False})
+    text = request.POST.get("text", "").strip()
+    if not text:
+        return redirect("ticket_list")
 
+    conversation = _get_client_conversation(request.user)
+    SupportMessage.objects.create(
+        conversation=conversation,
+        author=request.user,
+        text=text,
+    )
+    conversation.status = SupportConversation.Status.OPEN
+    conversation.save()
 
-# =============================
-# API: Список приоритетов заявок
-# =============================
+    _notify_users(
+        _staff_users(),
+        title="Новое обращение в поддержку",
+        message=f"{request.user} написал(а) в чат поддержки.",
+        kind=Notification.Kind.CHAT,
+        actor=request.user,
+    )
 
-@login_required
-def api_ticket_priorities(request):
-    """API endpoint для получения списка приоритетов заявок"""
-    if not _is_staff(request.user):
-        return JsonResponse({"error": "Доступ запрещён"}, status=403)
-
-    data = [
-        {"value": value, "label": label}
-        for value, label in Ticket.Priority.choices
-    ]
-    return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False})
+    messages.success(request, "Сообщение отправлено в поддержку.")
+    return redirect("ticket_list")

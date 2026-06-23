@@ -2,14 +2,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView  # ← Добавили импорт
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('users.urls')),
     path('tickets/', include('tickets.urls')),
-    
-    # Главная страница перенаправляет на логин
+
+    # Главная страница перенаправляет на список заявок
     path('', RedirectView.as_view(url='/accounts/login/', permanent=False)),
 ]
 

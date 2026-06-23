@@ -1,3 +1,5 @@
+{% load static %}
+
 <section class="panel">
     <table class="data-table">
         <thead>
@@ -13,11 +15,7 @@
         <tbody>
             {% for item in users %}
                 <tr>
-                    <td>
-                        <span class="avatar" style="background:#2563eb">
-                            {{ item.name|slice:":1"|upper }}
-                        </span>
-                    </td>
+                    <td><span class="avatar" style="background:#2563eb">{{ item.name|slice:":1"|upper }}</span></td>
                     <td>{{ item.surname }} {{ item.name }}</td>
                     <td>{{ item.email }}</td>
                     <td>{{ item.get_role_display }}</td>
@@ -29,10 +27,7 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href="?q={{ search_query }}&role={{ role_filter }}&user_id={{ item.id }}" 
-                           class="btn btn-primary btn-sm">
-                            Редактировать
-                        </a>
+                        <a href="?q={{ search_query }}&role={{ role_filter }}&user_id={{ item.id }}" class="btn btn-primary btn-sm">Редактировать</a>
                     </td>
                 </tr>
             {% empty %}
@@ -40,7 +35,5 @@
             {% endfor %}
         </tbody>
     </table>
-    <div class="page-subtitle" style="padding:16px 24px">
-        Всего: {{ users_count }} • Активных: {{ active_count }}
-    </div>
+    <div class="page-subtitle" style="padding:16px 24px">Всего: {{ users_count }} • Активных: {{ active_count }}</div>
 </section>

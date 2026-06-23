@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Модальные окна
     document.querySelectorAll('[data-modal-open]').forEach(function (trigger) {
         trigger.addEventListener('click', function () {
             var modal = document.getElementById(trigger.getAttribute('data-modal-open'));
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Чат поддержки
     var supportFab = document.getElementById('supportFab');
     var supportWidget = document.getElementById('supportWidget');
     if (supportFab && supportWidget) {
@@ -35,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Показ/скрытие пароля
     document.querySelectorAll('.password-toggle').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var input = btn.parentElement.querySelector('input');
@@ -44,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Просмотр заявки (клиент)
     document.querySelectorAll('[data-ticket-open]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var modal = document.getElementById('ticketDetailModal');
@@ -78,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Функция для включения/выключения полей в модалке админа
     function setAdminTicketReadonly(readonly) {
         var fields = ['adminContactInput', 'adminDescriptionInput', 'adminStatusSelect', 'adminPrioritySelect'];
         fields.forEach(function (id) {
@@ -91,12 +86,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (notice) notice.style.display = readonly ? 'block' : 'none';
     }
 
-    // Заполнение модалки редактирования заявки
     document.querySelectorAll('[data-admin-ticket-open]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var modal = document.getElementById('adminTicketModal');
             if (!modal) return;
-            
             document.getElementById('adminTicketForm').action = btn.dataset.action || '#';
             document.getElementById('adminTicketNext').value = btn.dataset.next || '';
             document.getElementById('adminCompany').textContent = btn.dataset.company || 'Не указано';
@@ -104,67 +97,10 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('adminContactInput').value = btn.dataset.contact || '';
             document.getElementById('adminDate').textContent = btn.dataset.date || '';
             document.getElementById('adminDescriptionInput').value = btn.dataset.description || '';
-            
-            if (btn.dataset.statusValue) {
-                document.getElementById('adminStatusSelect').value = btn.dataset.statusValue;
-            }
-            if (btn.dataset.priorityValue) {
-                document.getElementById('adminPrioritySelect').value = btn.dataset.priorityValue;
-            }
-            
-            // ИСПРАВЛЕНО: была обрывочная строка
+            if (btn.dataset.statusValue) document.getElementById('adminStatusSelect').value = btn.dataset.statusValue;
+            if (btn.dataset.priorityValue) document.getElementById('adminPrioritySelect').value = btn.dataset.priorityValue;
             setAdminTicketReadonly(btn.dataset.readonly === '1');
-            
-            // Загружаем статусы и приоритеты для селектов
-            loadStatusesAndPriorities();
-            
             modal.classList.add('open');
         });
     });
-
-    // Загрузка статусов и приоритетов из API
-    function loadStatusesAndPriorities() {
-        var statusSelect = document.getElementById('adminStatusSelect');
-        var prioritySelect = document.getElementById('adminPrioritySelect');
-        
-        // Загружаем статусы
-        fetch('/tickets/api/statuses/')
-            .then(response => response.json())
-            .then(data => {
-                if (statusSelect && data.length > 0) {
-                    var currentValue = statusSelect.value;
-                    statusSelect.innerHTML = '';
-                    data.forEach(function(item) {
-                        var option = document.createElement('option');
-                        option.value = item.value;
-                        option.textContent = item.label;
-                        statusSelect.appendChild(option);
-                    });
-                    if (currentValue) {
-                        statusSelect.value = currentValue;
-                    }
-                }
-            })
-            .catch(error => console.error('Ошибка загрузки статусов:', error));
-        
-        // Загружаем приоритеты
-        fetch('/tickets/api/priorities/')
-            .then(response => response.json())
-            .then(data => {
-                if (prioritySelect && data.length > 0) {
-                    var currentValue = prioritySelect.value;
-                    prioritySelect.innerHTML = '';
-                    data.forEach(function(item) {
-                        var option = document.createElement('option');
-                        option.value = item.value;
-                        option.textContent = item.label;
-                        prioritySelect.appendChild(option);
-                    });
-                    if (currentValue) {
-                        prioritySelect.value = currentValue;
-                    }
-                }
-            })
-            .catch(error => console.error('Ошибка загрузки приоритетов:', error));
-    }
 });
