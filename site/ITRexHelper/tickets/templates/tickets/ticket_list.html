@@ -36,6 +36,8 @@
                         <div class="ticket-card__text">{{ ticket.description|truncatechars:120 }}</div>
                         <div class="ticket-card__actions">
                             <button type="button" class="btn btn-primary btn-sm" data-ticket-open
+                                data-ticket-id="{{ ticket.id }}"
+                                data-status-code="{{ ticket.status }}"
                                 data-date="{{ ticket.created_at|date:'d.m.Y' }}"
                                 data-description="{{ ticket.description }}"
                                 data-status="{{ status_info.0 }}"

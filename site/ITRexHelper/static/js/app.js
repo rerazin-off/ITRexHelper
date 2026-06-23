@@ -54,6 +54,26 @@ document.addEventListener('DOMContentLoaded', function () {
             var statusEl = document.getElementById('detailStatus');
             statusEl.textContent = btn.dataset.status || '';
             statusEl.className = 'status-badge ' + (btn.dataset.statusClass || 'status-new');
+
+            var contractLink = document.getElementById('detailContractDownload');
+            var footer = modal.querySelector('.modal__footer');
+            if (footer) {
+                if (!contractLink) {
+                    contractLink = document.createElement('a');
+                    contractLink.id = 'detailContractDownload';
+                    contractLink.className = 'btn btn-outline btn-sm';
+                    contractLink.textContent = 'Скачать договор';
+                    footer.insertBefore(contractLink, footer.firstChild);
+                }
+                if (btn.dataset.statusCode === 'CLOSED' && btn.dataset.ticketId) {
+                    contractLink.href = '/tickets/' + btn.dataset.ticketId + '/contract/download/';
+                    contractLink.style.display = 'inline-flex';
+                } else {
+                    contractLink.style.display = 'none';
+                    contractLink.href = '#';
+                }
+            }
+
             modal.classList.add('open');
         });
     });

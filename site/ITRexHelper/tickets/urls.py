@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, document_views
 
 urlpatterns = [
     # ===== Список заявок клиента =====
@@ -21,6 +21,8 @@ urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('all/', views.admin_tickets, name='admin_tickets'),
     path('analytics/', views.admin_analytics, name='admin_analytics'),
+    path('analytics/download/', document_views.download_analytics_report, name='download_analytics_report'),
+    path('<int:ticket_id>/contract/download/', document_views.download_ticket_contract, name='download_ticket_contract'),
     path('users/', views.admin_users, name='admin_users'),
     path('chat/', views.admin_chat, name='admin_chat'),
     path('support-chat/', views.support_chat, name='support_chat'),
