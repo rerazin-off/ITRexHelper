@@ -228,47 +228,139 @@ class Comment(models.Model):
 
 
 class Notification(models.Model):
-    """
-    Уведомление для пользователя.
-    Создаётся автоматически при смене статуса заявки, добавлении комментария и т.д.
-    """
-    class Type(models.TextChoices):
-        STATUS_CHANGED = 'STATUS_CHANGED', 'Изменение статуса'
-        NEW_COMMENT = 'NEW_COMMENT', 'Новый комментарий'
-        TICKET_CREATED = 'TICKET_CREATED', 'Новая заявка'
-        TICKET_ASSIGNED = 'TICKET_ASSIGNED', 'Назначение исполнителя'
-        CHAT_MESSAGE = 'CHAT_MESSAGE', 'Сообщение в чате'
-        APPOINTMENT = 'APPOINTMENT', 'Назначено время приёма'
 
-    user = models.ForeignKey(
+    class Kind(models.TextChoices):
+        TICKET = 'TICKET', 'Заявка'
+        COMMENT = 'COMMENT', 'Комментарий'
+        STATUS = 'STATUS', 'Статус'
+        CHAT = 'CHAT', 'Чат'
+
+    recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='notifications',
-        verbose_name="Получатель"
+        related_name='notifications'
     )
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_notifications'
+    )
+
     ticket = models.ForeignKey(
-        'Ticket',
+        Ticket,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='notifications',
-        verbose_name="Связанная заявка"
+        related_name='notifications'
     )
 
-    notification_type = models.CharField(
+    kind = models.CharField(
         max_length=20,
-        choices=Type.choices,
-        verbose_name="Тип уведомления"
+        choices=Kind.choices,
+        default=Kind.TICKET
     )
-    message = models.TextField(verbose_name="Текст уведомления")
-    is_read = models.BooleanField(default=False, verbose_name="Прочитано")
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    title = models.CharField(
+        max_length=160
+    )
 
-    def __str__(self):
-        return f"Уведомление для {self.user}: {self.message[:50]}"
+    message = models.TextField()
+
+    is_read = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     class Meta:
-        verbose_name = "Уведомление"
-        verbose_name_plural = "Уведомления"
         ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class SupportConversation(models.Model):
+
+    class Status(models.TextChoices):
+        OPEN = 'OPEN', 'Открыт'
+        WAITING_CLIENT = 'WAITING_CLIENT', 'Ожидает клиента'
+        RESOLVED = 'RESOLVED', 'Решен'
+
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='support_conversations'
+    )
+
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assigned_support_conversations'
+    )
+
+    ticket = models.ForeignKey(
+        Ticket,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='support_conversations'
+    )
+
+    subject = models.CharField(
+        max_length=180,
+        default='Чат поддержки'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.OPEN
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f'Чат #{self.id}: {self.client}'
+
+
+class SupportMessage(models.Model):
+
+    conversation = models.ForeignKey(
+        SupportConversation,
+        on_delete=models.CASCADE,
+        related_name='messages'
+    )
+
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='support_messages'
+    )
+
+    text = models.TextField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'Сообщение #{self.id}'

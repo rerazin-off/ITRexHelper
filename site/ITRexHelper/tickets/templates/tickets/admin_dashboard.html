@@ -62,6 +62,22 @@
             </section>
 
             <aside class="stats-stack">
+                {% if unread_notifications %}
+                    <div class="stat-card">
+                        <div class="stat-card__title">Уведомления</div>
+                        {% for notification in unread_notifications %}
+                            <div style="margin-bottom:12px">
+                                <strong>{{ notification.title }}</strong>
+                                <div class="stat-card__meta">{{ notification.message|truncatechars:80 }}</div>
+                                <form method="post" action="{% url 'notification_mark_read' notification.id %}" style="margin-top:8px">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{% url 'admin_dashboard' %}">
+                                    <button type="submit" class="btn btn-outline btn-sm">Прочитано</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <div class="stat-card">
                     <div class="stat-card__title">Успешно закрыто</div>
                     <div class="stat-card__value">{{ closed_month }}</div>

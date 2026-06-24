@@ -22,11 +22,18 @@
                         <span class="avatar" style="background:#2563eb">{{ client.name|slice:":1"|upper }}</span>
                         <div class="chat-item__content">
                             <div class="chat-item__name">{{ client.surname }} {{ client.name }}</div>
-                            <div class="chat-item__preview">{{ client.email }}</div>
+                            <div class="chat-item__preview">
+                                {% if client.latest_support_message %}
+                                    {{ client.latest_support_message.text|truncatechars:42 }}
+                                {% else %}
+                                    {{ client.email }}
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="chat-item__meta">
-                            <div>14:30</div>
-                            <div class="unread-badge">1</div>
+                            {% if client.latest_support_message %}
+                                <div>{{ client.latest_support_message.created_at|date:"H:i" }}</div>
+                            {% endif %}
                         </div>
                     </a>
                 {% empty %}
@@ -49,7 +56,7 @@
                     </div>
                     <div class="chat-messages">
                         {% for message in messages_list %}
-                            <div class="message-bubble incoming">
+                            <div class="message-bubble {% if message.author == user %}outgoing{% else %}incoming{% endif %}">
                                 {{ message.text }}
                                 <span class="message-time">{{ message.created_at|date:"d.m.Y, H:i:s" }}</span>
                             </div>
@@ -57,6 +64,14 @@
                             <div class="message-bubble incoming">Сообщений пока нет</div>
                         {% endfor %}
                     </div>
+                    {% if selected_conversation %}
+                        <form method="post" action="{% url 'admin_chat' %}" class="chat-input">
+                            {% csrf_token %}
+                            <input type="hidden" name="conversation_id" value="{{ selected_conversation.id }}">
+                            <input type="text" name="text" placeholder="Введите ответ..." required>
+                            <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+                        </form>
+                    {% endif %}
                 {% else %}
                     <div class="empty-state">Выберите чат слева, чтобы просмотреть переписку</div>
                 {% endif %}

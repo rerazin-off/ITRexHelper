@@ -20,7 +20,7 @@ class AuthViewsTest(TestCase):
     def test_login_page_renders(self):
         response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Авторизация')
+        self.assertContains(response, 'Вход в систему')
 
     def test_register_page_renders(self):
         response = self.client.get(reverse('register'))
