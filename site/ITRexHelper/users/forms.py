@@ -81,6 +81,7 @@ class CustomRegistrationForm(UserCreationForm):
     company_name = forms.CharField(
         label='Наименование компании',
         max_length=200,
+        required=False,
         widget=forms.TextInput(attrs={'placeholder': 'ООО Ромашка', 'class': 'form-control'}),
     )
     password1 = forms.CharField(

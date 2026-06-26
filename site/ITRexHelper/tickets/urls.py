@@ -1,14 +1,8 @@
 from django.urls import path
-<<<<<<< HEAD
 from . import views, document_views
-=======
-
-from . import views
->>>>>>> 304b811 (Implement support chat, notifications and analytics improvements)
 
 
 urlpatterns = [
-<<<<<<< HEAD
     # ===== Список заявок клиента =====
     path('', views.ticket_list, name='ticket_list'),
     
@@ -34,12 +28,10 @@ urlpatterns = [
     path('chat/', views.admin_chat, name='admin_chat'),
     path('support-chat/', views.support_chat, name='support_chat'),
     
-    # ===== API endpoints (для фронтенда) =====
-    path('api/users/', views.api_users_list, name='api_users_list'),
-    path('api/statuses/', views.api_ticket_statuses, name='api_statuses'),
-    path('api/priorities/', views.api_ticket_priorities, name='api_priorities'),
-]
-=======
+    # # ===== API endpoints (для фронтенда) =====
+    # path('api/users/', views.api_users_list, name='api_users_list'),
+    # path('api/statuses/', views.api_ticket_statuses, name='api_statuses'),
+    # path('api/priorities/', views.api_ticket_priorities, name='api_priorities'),
 
     # список заявок клиента
     path(
@@ -148,4 +140,3 @@ urlpatterns = [
     ),
 
 ]
->>>>>>> 304b811 (Implement support chat, notifications and analytics improvements)
