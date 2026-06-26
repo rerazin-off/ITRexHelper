@@ -24,12 +24,10 @@ def registration_payload(**overrides):
 
 
 class RegistrationAuthTests(TestCase):
-    """Регистрация и авторизация — 20 простых тестов."""
 
     def setUp(self):
         self.client = Client()
 
-    # --- ПОЗИТИВНЫЕ ---
 
     def test_user_appears_in_database_after_registration(self):
         """Пользователь появляется в БД после регистрации"""
@@ -196,7 +194,6 @@ class RegistrationAuthTests(TestCase):
         response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
 
-    # --- НЕГАТИВНЫЕ ---
 
     def test_missing_surname_is_invalid(self):
         """Регистрация без фамилии не проходит"""
