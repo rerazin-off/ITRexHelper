@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from datetime import timedelta
+from django.test import Client
 
 from .models import Notification, SupportConversation, SupportMessage, Ticket
 
@@ -90,3 +92,5 @@ class SupportAndNotificationModelTest(TestCase):
 
         self.assertEqual(conversation.status, SupportConversation.Status.OPEN)
         self.assertEqual(message.conversation, conversation)
+
+
