@@ -151,6 +151,34 @@ class AdminTicketsFilterTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['current_sort'], '-created_at')
 
+    def test_closed_ticket_shows_contract_download_link(self):
+        response = self.client.get(reverse('admin_tickets'), {'status': Ticket.Status.CLOSED})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Скачать договор')
+        self.assertContains(
+            response,
+            reverse('download_ticket_contract', args=[self.closed_ticket.id]),
+        )
+
+    def test_open_ticket_does_not_show_contract_download_link(self):
+        response = self.client.get(reverse('admin_tickets'), {'status': Ticket.Status.NEW})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Скачать договор')
+
+    def test_admin_user_can_see_contract_download_for_closed_ticket(self):
+        admin_user = User.objects.create_user(
+            username='admin1',
+            email='admin1@test.com',
+            password='pass12345',
+            surname='Админов',
+            name='Админ',
+            role='ADMIN',
+        )
+        self.client.force_login(admin_user)
+        response = self.client.get(reverse('admin_tickets'), {'status': Ticket.Status.CLOSED})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Скачать договор')
+
 
 class AdminAnalyticsStatisticsTests(TestCase):
     """Статистика и данные страницы аналитики."""

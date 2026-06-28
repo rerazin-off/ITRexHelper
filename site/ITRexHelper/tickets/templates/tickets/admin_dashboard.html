@@ -39,6 +39,7 @@
                                 <td><span class="status-badge {{ status_info.1 }}">{{ status_info.0 }}</span></td>
                                 <td>
                                     <button type="button" class="btn btn-primary btn-sm" data-admin-ticket-open
+                                        data-ticket-id="{{ ticket.id }}"
                                         data-action="{% url 'ticket_admin_update' ticket.id %}"
                                         data-next="{% url 'admin_dashboard' %}"
                                         data-readonly="{% if ticket|ticket_readonly %}1{% else %}0{% endif %}"

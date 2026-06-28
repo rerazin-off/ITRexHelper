@@ -64,6 +64,9 @@
                             <td>{{ ticket.contact_info|default:ticket.author.contact_phone|default:ticket.author.email }}</td>
                             <td>{{ ticket.description|truncatechars:60 }}</td>
                             <td style="display:flex;gap:8px;flex-wrap:wrap">
+                                {% if ticket.status == 'CLOSED' %}
+                                    <a href="{% url 'download_ticket_contract' ticket.id %}" class="btn btn-outline btn-sm">Скачать договор</a>
+                                {% endif %}
                                 {% if ticket.status == 'NEW' and not ticket.executor %}
                                     <form method="post" action="{% url 'ticket_assign_self' ticket.id %}">
                                         {% csrf_token %}
@@ -71,6 +74,7 @@
                                     </form>
                                 {% endif %}
                                 <button type="button" class="btn btn-primary btn-sm" data-admin-ticket-open
+                                    data-ticket-id="{{ ticket.id }}"
                                     data-action="{% url 'ticket_admin_update' ticket.id %}"
                                     data-next="{% url 'admin_tickets' %}"
                                     data-readonly="{% if ticket|ticket_readonly %}1{% else %}0{% endif %}"

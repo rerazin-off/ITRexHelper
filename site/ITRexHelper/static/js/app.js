@@ -100,6 +100,26 @@ document.addEventListener('DOMContentLoaded', function () {
             if (btn.dataset.statusValue) document.getElementById('adminStatusSelect').value = btn.dataset.statusValue;
             if (btn.dataset.priorityValue) document.getElementById('adminPrioritySelect').value = btn.dataset.priorityValue;
             setAdminTicketReadonly(btn.dataset.readonly === '1');
+
+            var adminFooter = modal.querySelector('.modal__footer');
+            var adminContractLink = document.getElementById('adminContractDownload');
+            if (adminFooter) {
+                if (!adminContractLink) {
+                    adminContractLink = document.createElement('a');
+                    adminContractLink.id = 'adminContractDownload';
+                    adminContractLink.className = 'btn btn-outline btn-sm';
+                    adminContractLink.textContent = 'Скачать договор';
+                    adminFooter.insertBefore(adminContractLink, adminFooter.firstChild);
+                }
+                if (btn.dataset.statusValue === 'CLOSED' && btn.dataset.ticketId) {
+                    adminContractLink.href = '/tickets/' + btn.dataset.ticketId + '/contract/download/';
+                    adminContractLink.style.display = 'inline-flex';
+                } else {
+                    adminContractLink.style.display = 'none';
+                    adminContractLink.href = '#';
+                }
+            }
+
             modal.classList.add('open');
         });
     });

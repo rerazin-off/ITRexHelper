@@ -21,6 +21,9 @@
                     <span class="status-badge {{ status_info.1 }}">{{ status_info.0 }}</span>
                 {% endwith %}
             </div>
+            {% if user|is_staff_user and ticket.status == 'CLOSED' %}
+                <a href="{% url 'download_ticket_contract' ticket.id %}" class="btn btn-outline btn-sm">Скачать договор</a>
+            {% endif %}
         </div>
 
         <section class="panel" style="padding:24px;margin-bottom:24px">

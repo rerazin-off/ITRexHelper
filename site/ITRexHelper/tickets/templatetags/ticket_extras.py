@@ -56,3 +56,12 @@ def display_status(ticket):
 @register.filter
 def ticket_readonly(ticket):
     return ticket.status in ('CLOSED', 'REJECTED')
+
+
+@register.filter
+def is_staff_user(user):
+    return user.is_authenticated and (
+        user.is_staff
+        or user.is_superuser
+        or getattr(user, 'role', None) in ('STAFF', 'ADMIN')
+    )

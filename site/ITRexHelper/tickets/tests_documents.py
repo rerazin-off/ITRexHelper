@@ -5,7 +5,9 @@ from django.utils import timezone
 from datetime import timedelta
 from unittest.mock import patch, MagicMock
 
-from tickets.documents.generator import generate_pdf_from_template
+from io import BytesIO
+
+from tickets.documents.generator import _convert_docx_to_pdf, generate_pdf_from_template
 from tickets.documents.services import collect_analytics_context, collect_contract_context
 from tickets.models import Ticket, TicketStatusHistory
 
@@ -241,7 +243,70 @@ class DocumentGenerationTests(TestCase):
         response = self.client.get(reverse('download_ticket_contract', args=[self.open_ticket.id]))
         self.assertEqual(response.status_code, 302)
 
-    def test_staff_can_download_any_closed_ticket_contract(self):
+    def test_staff_can_download_closed_ticket_contract(self):
         self.client.force_login(self.staff_user)
         response = self.client.get(reverse('download_ticket_contract', args=[self.closed_ticket.id]))
         self.assertIn(response.status_code, [200, 302])
+
+    @patch('tickets.documents.generator._render_docx')
+    @patch('tickets.documents.generator._convert_docx_to_pdf')
+    def test_admin_can_download_closed_ticket_contract(self, mock_convert, mock_render):
+        mock_render.return_value = b'docx content'
+        mock_convert.return_value = b'%PDF-1.4 mock pdf content'
+        self.client.force_login(self.admin_user)
+        response = self.client.get(reverse('download_ticket_contract', args=[self.closed_ticket.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
+    @patch('tickets.documents.generator._render_docx')
+    @patch('tickets.documents.generator._convert_docx_to_pdf')
+    def test_superuser_with_client_role_can_download_any_closed_contract(self, mock_convert, mock_render):
+        mock_render.return_value = b'docx content'
+        mock_convert.return_value = b'%PDF-1.4 mock pdf content'
+        superuser = User.objects.create_user(
+            username='super1',
+            email='super1@test.com',
+            password='pass12345',
+            surname='Супер',
+            name='Админ',
+            role='CLIENT',
+            is_superuser=True,
+        )
+        self.client.force_login(superuser)
+        response = self.client.get(reverse('download_ticket_contract', args=[self.closed_ticket.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
+    @patch('tickets.documents.generator._render_docx')
+    @patch('tickets.documents.generator._convert_docx_to_pdf')
+    def test_staff_flag_with_client_role_can_download_any_closed_contract(self, mock_convert, mock_render):
+        mock_render.return_value = b'docx content'
+        mock_convert.return_value = b'%PDF-1.4 mock pdf content'
+        staff_flag_user = User.objects.create_user(
+            username='staffflag1',
+            email='staffflag1@test.com',
+            password='pass12345',
+            surname='Стафф',
+            name='Админ',
+            role='CLIENT',
+            is_staff=True,
+        )
+        self.client.force_login(staff_flag_user)
+        response = self.client.get(reverse('download_ticket_contract', args=[self.closed_ticket.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+
+
+class DocxToPdfConversionTests(TestCase):
+
+    def test_temporary_directory_ignores_cleanup_errors_on_windows(self):
+        with patch('tickets.documents.generator.tempfile.TemporaryDirectory') as mock_tmp:
+            mock_tmp.return_value.__enter__.return_value = '/tmp/test'
+            with patch(
+                'tickets.documents.generator._convert_with_docx2pdf',
+                return_value=b'%PDF-1.4 converted',
+            ):
+                pdf_bytes = _convert_docx_to_pdf(BytesIO(b'docx-bytes'))
+
+            mock_tmp.assert_called_once_with(ignore_cleanup_errors=True)
+            self.assertEqual(pdf_bytes, b'%PDF-1.4 converted')

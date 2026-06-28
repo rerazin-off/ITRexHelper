@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+import time
 from io import BytesIO
 from pathlib import Path
 
@@ -28,46 +29,62 @@ def _render_docx(template_name, context):
     return buffer
 
 
+def _read_pdf_file(pdf_path):
+    if not os.path.exists(pdf_path):
+        return None
+    with open(pdf_path, 'rb') as file:
+        return file.read()
+
+
+def _convert_with_docx2pdf(docx_path, pdf_path):
+    try:
+        from docx2pdf import convert
+
+        convert(docx_path, pdf_path)
+        return _read_pdf_file(pdf_path)
+    except Exception:
+        return None
+
+
+def _convert_with_libreoffice(tmp_dir, docx_path, pdf_path):
+    try:
+        result = subprocess.run(
+            [
+                'soffice',
+                '--headless',
+                '--convert-to',
+                'pdf',
+                '--outdir',
+                tmp_dir,
+                docx_path,
+            ],
+            capture_output=True,
+            timeout=60,
+            check=False,
+        )
+        if result.returncode == 0:
+            return _read_pdf_file(pdf_path)
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+    return None
+
+
 def _convert_docx_to_pdf(docx_buffer):
-    with tempfile.TemporaryDirectory() as tmp:
+    # docx2pdf on Windows keeps Word open on the temp file; ignore cleanup errors.
+    pdf_bytes = None
+
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         docx_path = os.path.join(tmp, 'document.docx')
         pdf_path = os.path.join(tmp, 'document.pdf')
 
         with open(docx_path, 'wb') as file:
             file.write(docx_buffer.getvalue())
 
-        try:
-            from docx2pdf import convert
+        pdf_bytes = _convert_with_docx2pdf(docx_path, pdf_path)
+        if not pdf_bytes:
+            pdf_bytes = _convert_with_libreoffice(tmp, docx_path, pdf_path)
 
-            convert(docx_path, pdf_path)
-            if os.path.exists(pdf_path):
-                with open(pdf_path, 'rb') as file:
-                    return file.read()
-        except Exception:
-            pass
-
-        try:
-            result = subprocess.run(
-                [
-                    'soffice',
-                    '--headless',
-                    '--convert-to',
-                    'pdf',
-                    '--outdir',
-                    tmp,
-                    docx_path,
-                ],
-                capture_output=True,
-                timeout=60,
-                check=False,
-            )
-            if result.returncode == 0 and os.path.exists(pdf_path):
-                with open(pdf_path, 'rb') as file:
-                    return file.read()
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            pass
-
-    return None
+    return pdf_bytes
 
 
 def generate_pdf_from_template(template_name, context):
