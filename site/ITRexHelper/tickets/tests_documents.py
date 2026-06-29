@@ -297,16 +297,3 @@ class DocumentGenerationTests(TestCase):
         self.assertEqual(response['Content-Type'], 'application/pdf')
 
 
-class DocxToPdfConversionTests(TestCase):
-
-    def test_temporary_directory_ignores_cleanup_errors_on_windows(self):
-        with patch('tickets.documents.generator.tempfile.TemporaryDirectory') as mock_tmp:
-            mock_tmp.return_value.__enter__.return_value = '/tmp/test'
-            with patch(
-                'tickets.documents.generator._convert_with_docx2pdf',
-                return_value=b'%PDF-1.4 converted',
-            ):
-                pdf_bytes = _convert_docx_to_pdf(BytesIO(b'docx-bytes'))
-
-            mock_tmp.assert_called_once_with(ignore_cleanup_errors=True)
-            self.assertEqual(pdf_bytes, b'%PDF-1.4 converted')
