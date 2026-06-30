@@ -1,0 +1,205 @@
+{% extends 'tickets/includes/base.html' %}
+
+{% block title %}Пользователи — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="page">
+    {% include 'tickets/includes/header_admin.html' with active_nav='users' %}
+
+    <main class="page-main">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="page-head">
+            <h1 class="page-title">Пользователи</h1>
+            <span class="page-subtitle" id="totalCount">Всего: {{ users_count }}</span>
+        </div>
+
+        <!-- ИЗМЕНЕНО: добавлен id="searchForm" и id для полей -->
+        <form method="get" class="toolbar" id="searchForm">
+            <div class="search-field">
+                <input type="text" name="q" id="searchInput" value="{{ search_query }}" placeholder="Поиск по имени или email..." autocomplete="off">
+            </div>
+            <div class="toolbar__actions">
+                <select name="role" id="roleFilter" class="form-control" style="max-width:160px;margin:0">
+                    <option value="">Все</option>
+                    <option value="CLIENT" {% if role_filter == 'CLIENT' %}selected{% endif %}>Пользователь</option>
+                    <option value="STAFF" {% if role_filter == 'STAFF' %}selected{% endif %}>Менеджер</option>
+                    <option value="ADMIN" {% if role_filter == 'ADMIN' %}selected{% endif %}>Администратор</option>
+                </select>
+                <button type="submit" class="btn btn-outline btn-sm">Найти</button>
+            </div>
+        </form>
+
+        <!-- ИЗМЕНЕНО: добавлен контейнер с id="usersTableContainer" -->
+        <div id="usersTableContainer">
+            <section class="panel">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Аватар</th>
+                            <th>Имя</th>
+                            <th>Email</th>
+                            <th>Роль</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in users %}
+                            <tr>
+                                <td><span class="avatar" style="background:#2563eb">{{ item.name|slice:":1"|upper }}</span></td>
+                                <td>{{ item.surname }} {{ item.name }}</td>
+                                <td>{{ item.email }}</td>
+                                <td>{{ item.get_role_display }}</td>
+                                <td>
+                                    {% if item.is_active %}
+                                        <span class="status-badge status-closed">Активен</span>
+                                    {% else %}
+                                        <span class="status-badge status-overdue">Заблокирован</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="?q={{ search_query }}&role={{ role_filter }}&user_id={{ item.id }}" class="btn btn-primary btn-sm">Редактировать</a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6">Пользователи не найдены</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="page-subtitle" style="padding:16px 24px">Всего: {{ users_count }} • Активных: {{ active_count }}</div>
+            </section>
+        </div>
+
+        {% if selected_user and edit_form %}
+            <div class="modal-overlay open" id="userEditModal">
+                <div class="modal modal-lg">
+                    <div class="modal__head">
+                        <h2 class="modal__title">Пользователь: {{ selected_user.surname }} {{ selected_user.name }}</h2>
+                        <a href="{% url 'admin_users' %}?q={{ search_query }}&role={{ role_filter }}" class="modal__close">&times;</a>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+                        <div class="modal__body">
+                            <div class="form-row-2">
+                                <div><label class="form-label">Фамилия</label>{{ edit_form.surname }}</div>
+                                <div><label class="form-label">Имя</label>{{ edit_form.name }}</div>
+                            </div>
+                            <label class="form-label">Отчество</label>{{ edit_form.patronymic }}
+                            <label class="form-label">Email</label>{{ edit_form.email }}
+                            <label class="form-label">Телефон</label>{{ edit_form.contact_phone }}
+                            <label class="form-label">Компания</label>{{ edit_form.company_name }}
+                            {% if is_admin %}
+                                <label class="form-label">Роль</label>{{ edit_form.role }}
+                                <label style="display:flex;gap:8px;align-items:center;margin-top:12px">
+                                    {{ edit_form.is_active }} Активен (снять галочку = блокировка)
+                                </label>
+                            {% else %}
+                                <p class="form-hint">Изменять роль и блокировку может только администратор.</p>
+                            {% endif %}
+                            {% for field in edit_form %}
+                                {% for error in field.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+                            {% endfor %}
+                        </div>
+                        <div class="modal__footer">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                            <a href="{% url 'admin_users' %}?q={{ search_query }}&role={{ role_filter }}" class="btn btn-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+    {% include 'tickets/includes/footer.html' %}
+</div>
+
+<!-- ДОБАВЛЕНО: JavaScript для live поиска -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const roleFilter = document.getElementById('roleFilter');
+    const tableContainer = document.getElementById('usersTableContainer');
+    const totalCount = document.getElementById('totalCount');
+    let debounceTimer;
+
+    function performSearch(page) {
+        const searchValue = searchInput.value.trim();
+        const roleValue = roleFilter.value;
+        const pageParam = page ? `&page=${page}` : '';
+        
+        fetch(`{% url 'admin_users' %}?q=${encodeURIComponent(searchValue)}&role=${roleValue}${pageParam}`,
+            {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
+        )
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                tableContainer.innerHTML = data.html;
+                if (totalCount) {
+                    totalCount.textContent = `Всего: ${data.count}`;
+                }
+                // Обновляем URL
+                const url = new URL(window.location);
+                url.searchParams.set('q', searchValue);
+                url.searchParams.set('role', roleValue);
+                if (page) {
+                    url.searchParams.set('page', page);
+                } else {
+                    url.searchParams.delete('page');
+                }
+                window.history.pushState({}, '', url);
+            }
+        })
+        .catch(error => console.error('Ошибка поиска:', error));
+    }
+
+    // Поиск при вводе (с задержкой 300ms)
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+            performSearch();
+        }, 300);
+    });
+
+    // Поиск при изменении роли
+    roleFilter.addEventListener('change', function() {
+        performSearch();
+    });
+
+    // Предотвращаем отправку формы
+    const searchForm = document.getElementById('searchForm');
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        performSearch();
+    });
+
+    // Пагинация
+    tableContainer.addEventListener('click', function(e) {
+        const link = e.target.closest('.pagination a');
+        if (link) {
+            e.preventDefault();
+            const url = new URL(link.href);
+            const page = url.searchParams.get('page');
+            performSearch(page);
+        }
+    });
+
+    // Восстановление пагинации после обновления таблицы
+    const observer = new MutationObserver(function() {
+        // Можно добавить переинициализацию если нужно
+    });
+    observer.observe(tableContainer, { childList: true, subtree: true });
+});
+</script>
+{% endblock %}

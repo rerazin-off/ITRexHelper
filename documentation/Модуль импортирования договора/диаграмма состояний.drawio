@@ -1,0 +1,63 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="Страница-1" id="GecrT0sM54S_wVPX_oPE">
+    <mxGraphModel dx="1268" dy="611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-1" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#ff0000;" parent="1" vertex="1">
+          <mxGeometry x="350" y="380" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="AyizQTuElnWhvbjQI6iZ-1" target="AyizQTuElnWhvbjQI6iZ-5" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="365" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-5" value="Отчёт создан" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="285" y="430" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-7" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="AyizQTuElnWhvbjQI6iZ-5" target="AyizQTuElnWhvbjQI6iZ-14" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="365" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-14" value="Отображение результата&#xa;в виде макета" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="285" y="525" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-16" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="AyizQTuElnWhvbjQI6iZ-14" target="AyizQTuElnWhvbjQI6iZ-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-21" value="Отправка отчёта &#xa;в генераторор PDF" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="285" y="620" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-24" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="AyizQTuElnWhvbjQI6iZ-21" target="AyizQTuElnWhvbjQI6iZ-26" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="450" y="655" as="targetPoint" />
+            <mxPoint x="450" y="620" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-26" value="Сгенерирован" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" parent="1" vertex="1">
+          <mxGeometry x="285" y="700" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AyizQTuElnWhvbjQI6iZ-28" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="AyizQTuElnWhvbjQI6iZ-26" target="gmzH8zjdYctEweL3TpZp-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="365" y="860" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TLlztX5eaVW1PSL3lKqR-1" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;" parent="1" vertex="1">
+          <mxGeometry x="350" y="920" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="gmzH8zjdYctEweL3TpZp-1" value="Отчёт в формате PDF&#xa;отправляется в загрузки &#xa;пользователя" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=60;horizontalStack=0;resizeParent=0;resizeLast=1;container=0;fontColor=#000000;collapsible=0;rounded=1;arcSize=30;strokeColor=#ff0000;fillColor=#ffffc0;swimlaneFillColor=#ffffc0;dropTarget=0;" vertex="1" parent="1">
+          <mxGeometry x="285" y="780" width="160" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="gmzH8zjdYctEweL3TpZp-2" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;verticalAlign=bottom;endArrow=open;endSize=8;strokeColor=#ff0000;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="gmzH8zjdYctEweL3TpZp-1" target="TLlztX5eaVW1PSL3lKqR-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="540" y="700" as="targetPoint" />
+            <mxPoint x="540" y="680" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

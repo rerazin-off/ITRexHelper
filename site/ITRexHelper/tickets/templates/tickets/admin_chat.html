@@ -1,0 +1,84 @@
+{% extends 'tickets/includes/base.html' %}
+
+{% block title %}Чат поддержки — IT REX HELPER{% endblock %}
+
+{% block body %}
+<div class="page">
+    {% include 'tickets/includes/header_admin.html' with active_nav='chat' %}
+
+    <main class="page-main">
+        <div class="page-head">
+            <h1 class="page-title">Чат поддержки</h1>
+            <span class="page-subtitle">Активных: {{ active_chats }}</span>
+        </div>
+
+        <div class="chat-layout">
+            <aside class="chat-list">
+                <div class="chat-list__search search-field">
+                    <input type="text" placeholder="Поиск по чатам...">
+                </div>
+                {% for client in clients %}
+                    <a href="?client={{ client.id }}" class="chat-item {% if selected_client.id == client.id %}active{% endif %}">
+                        <span class="avatar" style="background:#2563eb">{{ client.name|slice:":1"|upper }}</span>
+                        <div class="chat-item__content">
+                            <div class="chat-item__name">{{ client.surname }} {{ client.name }}</div>
+                            <div class="chat-item__preview">
+                                {% if client.latest_support_message %}
+                                    {{ client.latest_support_message.text|truncatechars:42 }}
+                                {% else %}
+                                    {{ client.email }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="chat-item__meta">
+                            {% if client.latest_support_message %}
+                                <div>{{ client.latest_support_message.created_at|date:"H:i" }}</div>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% empty %}
+                    <div class="empty-state">Обращений пока нет</div>
+                {% endfor %}
+                <div class="page-subtitle" style="padding:16px">Всего чатов: {{ clients|length }} • Активных: {{ active_chats }}</div>
+            </aside>
+
+            <section class="chat-window">
+                {% if selected_client %}
+                    <div class="chat-window__head">
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span class="avatar" style="background:#2563eb">{{ selected_client.name|slice:":1"|upper }}</span>
+                            <div>
+                                <strong>{{ selected_client.surname }} {{ selected_client.name }}</strong>
+                                <div style="font-size:13px;color:#16a34a">Активен</div>
+                            </div>
+                        </div>
+                        <a href="{% url 'admin_chat' %}" class="modal__close">&times;</a>
+                    </div>
+                    <div class="chat-messages">
+                        {% for message in messages_list %}
+                            <div class="message-bubble {% if message.author == user %}outgoing{% else %}incoming{% endif %}">
+                                {{ message.text }}
+                                <span class="message-time">{{ message.created_at|date:"d.m.Y, H:i:s" }}</span>
+                            </div>
+                        {% empty %}
+                            <div class="message-bubble incoming">Сообщений пока нет</div>
+                        {% endfor %}
+                    </div>
+                    {% if selected_conversation %}
+                        <form method="post" action="{% url 'admin_chat' %}" class="chat-input">
+                            {% csrf_token %}
+                            <input type="hidden" name="conversation_id" value="{{ selected_conversation.id }}">
+                            <input type="text" name="text" placeholder="Введите ответ..." required>
+                            <button type="submit" class="btn btn-primary btn-sm">Отправить</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">Выберите чат слева, чтобы просмотреть переписку</div>
+                {% endif %}
+            </section>
+        </div>
+    </main>
+
+    {% include 'tickets/includes/footer.html' %}
+</div>
+{% endblock %}
